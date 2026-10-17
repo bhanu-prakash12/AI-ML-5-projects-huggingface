@@ -1,0 +1,25 @@
+seed: 42
+profile: small
+paths:
+  data: data
+  artifacts: artifacts
+  reports: reports
+mlflow:
+  tracking_uri: sqlite:///mlflow.db
+  artifact_root: mlruns
+  experiment: dropout-risk
+  model_name: dropout-risk
+  alias: champion
+  port: 5001
+data:
+  uci_id: 697
+  split: {train: 0.70, val: 0.15, test: 0.15}
+model:
+  target_mode: binary   # binary | multiclass (see DECISIONS.md)
+  threshold_min_precision: 0.6
+  max_grid_runs: 12
+profiles:
+  small: {n_jobs: 2}
+  standard: {n_jobs: 4}
+api: {port: 8000, max_batch: 100}
+ui: {port: 7861}

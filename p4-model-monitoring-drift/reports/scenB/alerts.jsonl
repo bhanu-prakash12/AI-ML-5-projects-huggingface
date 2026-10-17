@@ -1,0 +1,5 @@
+{"window": 6, "reasons": ["drift_share 0.34 > 0.3", "pr_auc 0.393 dropped 51% vs baseline 0.801"], "drift_share": 0.3448275862068966, "pr_auc": 0.392690640682983, "labels_available_at_window": 7}
+{"window": 7, "reasons": ["drift_share 0.34 > 0.3", "pr_auc 0.384 dropped 52% vs baseline 0.801"], "drift_share": 0.3448275862068966, "pr_auc": 0.3835303484957506, "labels_available_at_window": 8}
+{"window": 8, "reasons": ["drift_share 0.52 > 0.3", "pr_auc 0.279 dropped 65% vs baseline 0.801"], "drift_share": 0.5172413793103449, "pr_auc": 0.27927851449105007, "labels_available_at_window": 9}
+{"window": 9, "reasons": ["drift_share 0.59 > 0.3", "pr_auc 0.247 dropped 69% vs baseline 0.801"], "drift_share": 0.5862068965517241, "pr_auc": 0.24749627831252832, "labels_available_at_window": 10}
+{"window": 10, "reasons": ["drift_share 0.62 > 0.3"], "drift_share": 0.6206896551724138, "pr_auc": null, "labels_available_at_window": null}

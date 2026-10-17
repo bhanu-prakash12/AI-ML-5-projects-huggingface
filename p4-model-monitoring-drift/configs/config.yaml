@@ -1,0 +1,24 @@
+seed: 42
+profile: small
+paths: {data: data, reports: reports, windows: reports/windows, artifacts: artifacts, db: artifacts/predictions.db, raw: data/creditcard.parquet, stream: data/stream.parquet, mlflow_db: artifacts/mlflow.db}
+ports: {api: 8004, ui: 7864, mlflow: 5004}
+data: {openml_id: 1597, ref_frac: 0.6, drop_cols: [], target: Class}
+profiles:
+  small:   # 8 GB laptop (default)
+    ref_sample: 20000        # reference rows kept for drift tests
+    stream_neg_keep: 22000   # non-fraud rows sampled from the 40% stream (all frauds kept)
+    days: 10                 # simulated days (= monitoring windows)
+    label_lag_days: 1
+  standard:  # 16 GB+ (opt-in)
+    ref_sample: 60000
+    stream_neg_keep: 80000
+    days: 20
+    label_lag_days: 1
+model:
+  name: fraud
+  params: {n_estimators: 300, learning_rate: 0.05, num_leaves: 31, min_child_samples: 20, subsample: 0.8, colsample_bytree: 0.8, scale_pos_weight: 1.0, n_jobs: 4, verbose: -1}
+  val_frac: 0.2   # last 20% (time order) of the reference part = validation
+  threshold: 0.5
+scenario: {name: B, start_day: 6, A: {amount_mult: 3.0, noise: 0.1}, B: {frac: 0.02, n_feats: 14, shift_sigma: 5.0}, C: {segment_feature: V1, segment_quantile: 0.5, flip_frac: 0.5}}
+monitor: {ref_days: 2, drift_share_threshold: 0.3, pr_auc_drop_threshold: 0.10, min_frauds_for_perf: 10}
+retrain: {min_improvement: 0.02}

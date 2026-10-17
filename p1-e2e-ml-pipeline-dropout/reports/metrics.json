@@ -1,0 +1,155 @@
+{
+  "champion": {
+    "kind": "lightgbm",
+    "params": {
+      "num_leaves": 15,
+      "learning_rate": 0.03,
+      "n_estimators": 400
+    },
+    "registry_version": "3",
+    "run_id": "e927c2bec199402ca88ee05ae1cd9c2e"
+  },
+  "threshold": {
+    "value": 0.2266599133171871,
+    "rule": "max recall at precision>=0.6",
+    "fallback": false
+  },
+  "val": {
+    "roc_auc": 0.898597795196902,
+    "pr_auc": 0.8436480515632366,
+    "f1": 0.7065637065637066,
+    "recall": 0.8591549295774648,
+    "precision": 0.6,
+    "base_rate": 0.3207831325301205
+  },
+  "test": {
+    "roc_auc": 0.9284839044652129,
+    "pr_auc": 0.9026435699741183,
+    "f1": 0.7470355731225297,
+    "recall": 0.883177570093458,
+    "precision": 0.6472602739726028,
+    "base_rate": 0.32228915662650603
+  },
+  "comparison": [
+    {
+      "kind": "lightgbm",
+      "params": {
+        "num_leaves": 15,
+        "learning_rate": 0.03,
+        "n_estimators": 200
+      },
+      "val_pr_auc": 0.8408405449564563,
+      "val_roc_auc": 0.8985561558560528
+    },
+    {
+      "kind": "lightgbm",
+      "params": {
+        "num_leaves": 15,
+        "learning_rate": 0.03,
+        "n_estimators": 400
+      },
+      "val_pr_auc": 0.8436480515632366,
+      "val_roc_auc": 0.898597795196902
+    },
+    {
+      "kind": "lightgbm",
+      "params": {
+        "num_leaves": 15,
+        "learning_rate": 0.1,
+        "n_estimators": 200
+      },
+      "val_pr_auc": 0.8377227777896629,
+      "val_roc_auc": 0.892424762916003
+    },
+    {
+      "kind": "lightgbm",
+      "params": {
+        "num_leaves": 15,
+        "learning_rate": 0.1,
+        "n_estimators": 400
+      },
+      "val_pr_auc": 0.8342187467929253,
+      "val_roc_auc": 0.889759845101652
+    },
+    {
+      "kind": "lightgbm",
+      "params": {
+        "num_leaves": 31,
+        "learning_rate": 0.03,
+        "n_estimators": 200
+      },
+      "val_pr_auc": 0.8322088387309327,
+      "val_roc_auc": 0.8946420578162247
+    },
+    {
+      "kind": "lightgbm",
+      "params": {
+        "num_leaves": 31,
+        "learning_rate": 0.03,
+        "n_estimators": 400
+      },
+      "val_pr_auc": 0.836418668392591,
+      "val_roc_auc": 0.8939654185274248
+    },
+    {
+      "kind": "lightgbm",
+      "params": {
+        "num_leaves": 31,
+        "learning_rate": 0.1,
+        "n_estimators": 200
+      },
+      "val_pr_auc": 0.8379250616509528,
+      "val_roc_auc": 0.8910610745031906
+    },
+    {
+      "kind": "lightgbm",
+      "params": {
+        "num_leaves": 31,
+        "learning_rate": 0.1,
+        "n_estimators": 400
+      },
+      "val_pr_auc": 0.8361458554190117,
+      "val_roc_auc": 0.8880214026211964
+    },
+    {
+      "kind": "xgboost",
+      "params": {
+        "max_depth": 3,
+        "learning_rate": 0.03,
+        "n_estimators": 300
+      },
+      "val_pr_auc": 0.8376973344017304,
+      "val_roc_auc": 0.8919979596722984
+    },
+    {
+      "kind": "xgboost",
+      "params": {
+        "max_depth": 3,
+        "learning_rate": 0.1,
+        "n_estimators": 300
+      },
+      "val_pr_auc": 0.8434706431517216,
+      "val_roc_auc": 0.8978378772264035
+    },
+    {
+      "kind": "xgboost",
+      "params": {
+        "max_depth": 6,
+        "learning_rate": 0.03,
+        "n_estimators": 300
+      },
+      "val_pr_auc": 0.8420135825061954,
+      "val_roc_auc": 0.8951209102359909
+    },
+    {
+      "kind": "xgboost",
+      "params": {
+        "max_depth": 6,
+        "learning_rate": 0.1,
+        "n_estimators": 300
+      },
+      "val_pr_auc": 0.8377471660002372,
+      "val_roc_auc": 0.8888750091086057
+    }
+  ]
+}

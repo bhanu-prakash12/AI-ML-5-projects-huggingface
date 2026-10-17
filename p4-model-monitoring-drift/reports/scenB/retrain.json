@@ -1,0 +1,38 @@
+{
+  "eval_window": 9,
+  "n_new_labelled_rows": 17706,
+  "n_new_frauds": 245,
+  "champion": {
+    "version": "1",
+    "window": {
+      "pr_auc": 0.24749627831252832,
+      "roc_auc": 0.8887141858839973,
+      "precision": 1.0,
+      "recall": 0.09433962264150944,
+      "f1": 0.1724137931034483,
+      "accuracy": 0.9783099864437416,
+      "base_rate": 0.02394938996836873,
+      "n": 2213,
+      "n_fraud": 53
+    },
+    "val_pr_auc": 0.8014087887277451
+  },
+  "challenger": {
+    "version": "2",
+    "window": {
+      "pr_auc": 0.9787433776373269,
+      "roc_auc": 0.9967592592592593,
+      "precision": 1.0,
+      "recall": 0.9622641509433962,
+      "f1": 0.9807692307692307,
+      "accuracy": 0.9990962494351558,
+      "base_rate": 0.02394938996836873,
+      "n": 2213,
+      "n_fraud": 53
+    },
+    "val_pr_auc": 0.8669404442304294
+  },
+  "promoted": true,
+  "reason": "window PR-AUC 0.979 vs champion 0.247",
+  "new_champion_version": "2"
+}

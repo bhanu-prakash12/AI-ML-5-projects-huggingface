@@ -1,0 +1,373 @@
+{
+ "note": "auto-drafted questions, not human-reviewed; indicative only (questions drawn from the indexed chunks)",
+ "n_questions": 31,
+ "n_answerable": 24,
+ "n_unanswerable": 7,
+ "recall_at_4": 0.792,
+ "mrr": 0.719,
+ "citation_rate_model": 0.083,
+ "citation_resolve_rate": 1.0,
+ "sources_fallback_rate": 0.917,
+ "refusal_accuracy_unanswerable": 1.0,
+ "answer_rate_answerable": 1.0,
+ "overall_refusal_accuracy": 1.0,
+ "threshold": {
+  "old": 0.65,
+  "new": 0.689,
+  "gate_acc_old": 1.0,
+  "gate_acc_new": 1.0,
+  "min_top_answerable": 0.773,
+  "max_top_unanswerable": 0.604
+ },
+ "per_question": [
+  {
+   "id": "q01",
+   "type": "direct",
+   "answerable": true,
+   "top": 0.802,
+   "refused": false,
+   "gate": false,
+   "model_cited": [],
+   "resolved": [],
+   "answer": "Neurons in a neural network are organized into layers, with signals traveling from the first layer (input layer) to the last layer (output layer). Typically, there are multiple intermediate layers known as hidden layers between these two main layers.\n\nSources: [artificial_neural_network.md:1], [unsu"
+  },
+  {
+   "id": "q02",
+   "type": "direct",
+   "answerable": true,
+   "top": 0.86,
+   "refused": false,
+   "gate": false,
+   "model_cited": [],
+   "resolved": [],
+   "answer": "Strictly speaking, the term backpropagation refers only to an algorithm for efficiently computing the gradient, not how the gradient is used, but the term is often used loosely to refer to the entire learning algorithm. This includes changing model parameters in the negative direction of the gradien"
+  },
+  {
+   "id": "q03",
+   "type": "direct",
+   "answerable": true,
+   "top": 0.849,
+   "refused": false,
+   "gate": false,
+   "model_cited": [
+    "bias_variance_tradeoff.md:1"
+   ],
+   "resolved": [
+    "bias_variance_tradeoff.md:1"
+   ],
+   "answer": "The bias-variance dilemma refers to the conflict between minimizing bias and variance errors when designing models for prediction tasks. It arises because attempting to reduce one type of error often increases the other, leading to suboptimal performance. [bias_variance_tradeoff.md:1]"
+  },
+  {
+   "id": "q04",
+   "type": "direct",
+   "answerable": true,
+   "top": 0.89,
+   "refused": false,
+   "gate": false,
+   "model_cited": [],
+   "resolved": [],
+   "answer": "In cross-validation, the dataset used for testing the model is called the validation dataset or testing set. This dataset is used to evaluate the performance of the model after it has been trained using the training dataset.\n\nSources: [cross_validation_statistics.md:1]"
+  },
+  {
+   "id": "q05",
+   "type": "direct",
+   "answerable": true,
+   "top": 0.882,
+   "refused": false,
+   "gate": false,
+   "model_cited": [],
+   "resolved": [],
+   "answer": "Decision trees are popular among machine learning algorithms because they are easily interpretable and simple to understand, making them accessible to users without a strong statistical background. Additionally, they produce algorithms that are straightforward to visualize, aiding in both understand"
+  },
+  {
+   "id": "q06",
+   "type": "direct",
+   "answerable": true,
+   "top": 0.881,
+   "refused": false,
+   "gate": false,
+   "model_cited": [],
+   "resolved": [],
+   "answer": "Augustin-Louis Cauchy first suggested gradient descent in 1847.\n\nSources: [gradient_descent.md:1], [backpropagation.md:1]"
+  },
+  {
+   "id": "q07",
+   "type": "direct",
+   "answerable": true,
+   "top": 0.859,
+   "refused": false,
+   "gate": false,
+   "model_cited": [],
+   "resolved": [],
+   "answer": "K-means clustering is indeed NP-hard, meaning it is computationally challenging to solve optimally. However, efficient heuristic algorithms like Lloyd's algorithm typically converge to a local optimum, which may not be the global optimum.\n\nSources: [k_means_clustering.md:1]"
+  },
+  {
+   "id": "q08",
+   "type": "direct",
+   "answerable": true,
+   "top": 0.808,
+   "refused": false,
+   "gate": false,
+   "model_cited": [],
+   "resolved": [],
+   "answer": "The k-NN classifier decides the class of an object based on the majority vote of its k nearest neighbors. If k equals 1, the object is assigned to the class of its single nearest neighbor. For larger k, the decision is made by averaging the classes of the k nearest neighbors.\n\nSources: [k_nearest_ne"
+  },
+  {
+   "id": "q09",
+   "type": "direct",
+   "answerable": true,
+   "top": 0.813,
+   "refused": false,
+   "gate": false,
+   "model_cited": [],
+   "resolved": [],
+   "answer": "Linear regression models the relationship between variables using linear functions. Specifically, when fitting a linear regression model, we estimate the parameters of a linear equation that best describes how the dependent variable changes with respect to the independent variables. This involves fi"
+  },
+  {
+   "id": "q10",
+   "type": "direct",
+   "answerable": true,
+   "top": 0.815,
+   "refused": false,
+   "gate": false,
+   "model_cited": [],
+   "resolved": [],
+   "answer": "In logistic regression, the function that transforms log-odds into a probability is known as the logistic function. This function maps any real-valued number to a value within the 0 to 1 interval, effectively turning log-odds into probabilities.\n\nSources: [logistic_regression.md:1]"
+  },
+  {
+   "id": "q11",
+   "type": "paraphrase",
+   "answerable": true,
+   "top": 0.784,
+   "refused": false,
+   "gate": false,
+   "model_cited": [],
+   "resolved": [],
+   "answer": "Neural networks, specifically deep learning, have surpassed earlier machine learning approaches due to advancements in deep learning techniques, particularly error backpropagation, which allows for more efficient training and improved performance across various applications including speech recognit"
+  },
+  {
+   "id": "q12",
+   "type": "direct",
+   "answerable": true,
+   "top": 0.836,
+   "refused": false,
+   "gate": false,
+   "model_cited": [],
+   "resolved": [],
+   "answer": "Naive Bayes classifiers and logistic regression both aim to quantify uncertainty but differ in their approach. Logistic regression directly models the probabilities of outcomes based on input features, providing a clear measure of confidence through the sigmoid function's output. In contrast, naive "
+  },
+  {
+   "id": "q13",
+   "type": "direct",
+   "answerable": true,
+   "top": 0.837,
+   "refused": false,
+   "gate": false,
+   "model_cited": [],
+   "resolved": [],
+   "answer": "Underfitting occurs when a mathematical model fails to capture the underlying structure of the data effectively. It happens when a model lacks necessary parameters or terms needed to accurately represent the true relationship between variables. This results in poor predictive performance since the m"
+  },
+  {
+   "id": "q14",
+   "type": "direct",
+   "answerable": true,
+   "top": 0.886,
+   "refused": false,
+   "gate": false,
+   "model_cited": [],
+   "resolved": [],
+   "answer": "In principal component analysis, a best-fitting line is defined as one that minimizes the average squared perpendicular distance from the points to the line. This approach helps in identifying the direction of maximum variance within the dataset.\n\nSources: [principal_component_analysis.md:1], [k_mea"
+  },
+  {
+   "id": "q15",
+   "type": "direct",
+   "answerable": true,
+   "top": 0.82,
+   "refused": false,
+   "gate": false,
+   "model_cited": [],
+   "resolved": [],
+   "answer": "Leo Breiman and Adele Cutler extended random forests by combining Breiman's \"bagging\" idea and random selection of features, introduced first by Ho and later independently by Amit and Geman.\n\nSources: [random_forest.md:1]"
+  },
+  {
+   "id": "q16",
+   "type": "direct",
+   "answerable": true,
+   "top": 0.845,
+   "refused": false,
+   "gate": false,
+   "model_cited": [],
+   "resolved": [],
+   "answer": "The data term in explicit regularization corresponds to the likelihood of the measurements, while the regularization term corresponds to a prior. Together, these two components form a combined objective that helps stabilize the estimation process by balancing between fitting the data well and enforc"
+  },
+  {
+   "id": "q17",
+   "type": "paraphrase",
+   "answerable": true,
+   "top": 0.847,
+   "refused": false,
+   "gate": false,
+   "model_cited": [],
+   "resolved": [],
+   "answer": "Reinforcement learning differs from both supervised and unsupervised learning because it involves a computer program interacting with a dynamic environment where it must achieve a specific goal through trial and error, receiving rewards for successful actions and penalties for unsuccessful ones. Thi"
+  },
+  {
+   "id": "q18",
+   "type": "paraphrase",
+   "answerable": true,
+   "top": 0.796,
+   "refused": false,
+   "gate": false,
+   "model_cited": [],
+   "resolved": [],
+   "answer": "The goal of supervised learning is for the trained model to accurately predict the output for new, unseen data. This requires the algorithm to effectively generalize from the training examples, a quality measured by its generalization error.\n\nSources: [supervised_learning.md:1], [unsupervised_learni"
+  },
+  {
+   "id": "q19",
+   "type": "direct",
+   "answerable": true,
+   "top": 0.811,
+   "refused": false,
+   "gate": false,
+   "model_cited": [],
+   "resolved": [],
+   "answer": "An SVM can perform non-linear classification using the kernel trick, which maps the original data into a higher-dimensional space where it can be linearly separated. This transformation allows the SVM to handle complex relationships without explicitly constructing a high-dimensional feature space.\n\n"
+  },
+  {
+   "id": "q20",
+   "type": "paraphrase",
+   "answerable": true,
+   "top": 0.781,
+   "refused": false,
+   "gate": false,
+   "model_cited": [],
+   "resolved": [],
+   "answer": "The training data for unsupervised learning comes from datasets collected \"in the wild,\" often through web crawling processes like Common Crawl, which allows for cheaper collection compared to manually constructed datasets used in supervised learning.\n\nSources: [unsupervised_learning.md:1], [machine"
+  },
+  {
+   "id": "q21",
+   "type": "direct",
+   "answerable": true,
+   "top": 0.785,
+   "refused": false,
+   "gate": false,
+   "model_cited": [],
+   "resolved": [],
+   "answer": "To determine the final clusters after applying k-means clustering with \\( k = 2 \\) initialized at the points (9, 3) and (11, 3), we need to follow these steps:\n\n1. **Initialize Clusters**: Start by placing the initial centroids at the specified points (9, 3) and (11, 3).\n   \n2. **Assign Points to Ne"
+  },
+  {
+   "id": "q22",
+   "type": "direct",
+   "answerable": true,
+   "top": 0.773,
+   "refused": false,
+   "gate": false,
+   "model_cited": [
+    "mit_6867_final_2003.pdf:3"
+   ],
+   "resolved": [
+    "mit_6867_final_2003.pdf:3"
+   ],
+   "answer": "In the 2003 final, it asks whether ranking features by mutual information for a linear classifier is more useful compared to using simple mutual information calculations (estimates \\(I^{(\\text{y}; \\varphi_i)}\\)) for a linear classifier. [mit_6867_final_2003.pdf:3]"
+  },
+  {
+   "id": "q23",
+   "type": "multi-chunk",
+   "answerable": true,
+   "top": 0.847,
+   "refused": false,
+   "gate": false,
+   "model_cited": [],
+   "resolved": [],
+   "answer": "Underfitting occurs when a model is too simple to capture the underlying pattern in the data, leading to high bias and low variance. The bias-variance tradeoff helps balance these two errors; increasing model complexity reduces bias but increases variance. For optimal generalization, the model must "
+  },
+  {
+   "id": "q24",
+   "type": "multi-chunk",
+   "answerable": true,
+   "top": 0.803,
+   "refused": false,
+   "gate": false,
+   "model_cited": [],
+   "resolved": [],
+   "answer": "Supervised learning involves teaching a model through labeled examples where the correct answers are provided, aiming for accurate predictions based on these examples. In contrast, unsupervised learning deals with datasets without predefined labels, allowing algorithms to discover inherent structure"
+  },
+  {
+   "id": "q25",
+   "type": "unanswerable",
+   "answerable": false,
+   "top": 0.519,
+   "refused": true,
+   "gate": true,
+   "model_cited": [],
+   "resolved": [],
+   "answer": "This is not in your notes."
+  },
+  {
+   "id": "q26",
+   "type": "unanswerable",
+   "answerable": false,
+   "top": 0.499,
+   "refused": true,
+   "gate": true,
+   "model_cited": [],
+   "resolved": [],
+   "answer": "This is not in your notes."
+  },
+  {
+   "id": "q27",
+   "type": "unanswerable",
+   "answerable": false,
+   "top": 0.486,
+   "refused": true,
+   "gate": true,
+   "model_cited": [],
+   "resolved": [],
+   "answer": "This is not in your notes."
+  },
+  {
+   "id": "q28",
+   "type": "unanswerable",
+   "answerable": false,
+   "top": 0.594,
+   "refused": true,
+   "gate": true,
+   "model_cited": [],
+   "resolved": [],
+   "answer": "This is not in your notes."
+  },
+  {
+   "id": "q29",
+   "type": "unanswerable",
+   "answerable": false,
+   "top": 0.573,
+   "refused": true,
+   "gate": true,
+   "model_cited": [],
+   "resolved": [],
+   "answer": "This is not in your notes."
+  },
+  {
+   "id": "q30",
+   "type": "unanswerable",
+   "answerable": false,
+   "top": 0.604,
+   "refused": true,
+   "gate": true,
+   "model_cited": [],
+   "resolved": [],
+   "answer": "This is not in your notes."
+  },
+  {
+   "id": "q31",
+   "type": "unanswerable",
+   "answerable": false,
+   "top": 0.604,
+   "refused": true,
+   "gate": true,
+   "model_cited": [],
+   "resolved": [],
+   "answer": "This is not in your notes."
+  }
+ ]
+}

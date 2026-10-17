@@ -1,0 +1,32 @@
+{"_note": "auto-drafted from real chunks, not human-reviewed; eval numbers are indicative only"}
+{"id": "q01", "question": "How are neurons organised in a neural network, and what are the first and last layers called?", "gold_chunk_ids": ["8580cf87304685ba258b8b7c46e8959d"], "answerable": true, "type": "direct"}
+{"id": "q02", "question": "Strictly speaking, what does the term backpropagation refer to?", "gold_chunk_ids": ["e7b4ef1d2711506769a38cda43a72361"], "answerable": true, "type": "direct"}
+{"id": "q03", "question": "What is the bias-variance dilemma?", "gold_chunk_ids": ["20bc61b93dc0a5591d41b057561efdf6"], "answerable": true, "type": "direct"}
+{"id": "q04", "question": "In cross-validation, what is the dataset used for testing the model called?", "gold_chunk_ids": ["0fe0537307f003ab361b5bb4e46bc022"], "answerable": true, "type": "direct"}
+{"id": "q05", "question": "Why are decision trees so popular among machine learning algorithms?", "gold_chunk_ids": ["81a551c0eecbdc3f50a93dc49ab2bbd9"], "answerable": true, "type": "direct"}
+{"id": "q06", "question": "Who first suggested gradient descent, and in what year?", "gold_chunk_ids": ["dc737982e740f6430891070144486c83"], "answerable": true, "type": "direct"}
+{"id": "q07", "question": "Is k-means clustering NP-hard, and what do the heuristic algorithms converge to?", "gold_chunk_ids": ["5f314319ea6fed620517d84e003d9884"], "answerable": true, "type": "direct"}
+{"id": "q08", "question": "How does the k-NN classifier decide the class of an object?", "gold_chunk_ids": ["e4b7a3a259535bcabfc40247fc315b37"], "answerable": true, "type": "direct"}
+{"id": "q09", "question": "In linear regression, what kind of functions model the relationship between variables?", "gold_chunk_ids": ["5ed84c4eb50e3c8368304baa8825874c"], "answerable": true, "type": "direct"}
+{"id": "q10", "question": "Which function turns log-odds into a probability in logistic regression?", "gold_chunk_ids": ["f0c223720952781aa9dc3fddc47fa754"], "answerable": true, "type": "direct"}
+{"id": "q11", "question": "What has let neural networks outperform earlier machine learning approaches?", "gold_chunk_ids": ["25a47643c42ab65f02131cea4e8f3438"], "answerable": true, "type": "paraphrase"}
+{"id": "q12", "question": "How do naive Bayes classifiers compare with logistic regression at quantifying uncertainty?", "gold_chunk_ids": ["886f986f81e36b9287792ac78565d2f6"], "answerable": true, "type": "direct"}
+{"id": "q13", "question": "What is underfitting?", "gold_chunk_ids": ["56391c9432a93b6948544d94b907ca45"], "answerable": true, "type": "direct"}
+{"id": "q14", "question": "How is a best-fitting line defined in principal component analysis?", "gold_chunk_ids": ["1491d27d9fa5fd9303a2f63fc1ce9c1e"], "answerable": true, "type": "direct"}
+{"id": "q15", "question": "Who extended random forests and which two ideas does the extension combine?", "gold_chunk_ids": ["5ebdac64ccd7eb8819cf10b75dad3a3c"], "answerable": true, "type": "direct"}
+{"id": "q16", "question": "In explicit regularization, what do the data term and the regularization term correspond to?", "gold_chunk_ids": ["ed19aea94ea6f51cd078cd25433ad6e4"], "answerable": true, "type": "direct"}
+{"id": "q17", "question": "What separates reinforcement learning from supervised and unsupervised learning?", "gold_chunk_ids": ["14ebfd8b5a53e3bc266d63200c4a81ee"], "answerable": true, "type": "paraphrase"}
+{"id": "q18", "question": "What is the aim of supervised learning in terms of unseen data?", "gold_chunk_ids": ["61dc6e089c5788da8c148363fc645d8a"], "answerable": true, "type": "paraphrase"}
+{"id": "q19", "question": "How can an SVM do non-linear classification?", "gold_chunk_ids": ["63da55506f1369e7b954431dade265b8"], "answerable": true, "type": "direct"}
+{"id": "q20", "question": "Where does the training data for unsupervised learning usually come from?", "gold_chunk_ids": ["d1d90d7b0ba81ac0238bd5c367ce0556"], "answerable": true, "type": "paraphrase"}
+{"id": "q21", "question": "In the 2004 final exam, k-means with k=2 is initialised at (9,3) and (11,3) on two rows of points; what is asked?", "gold_chunk_ids": ["49d578a127e913d31f37575905a6fd26"], "answerable": true, "type": "direct"}
+{"id": "q22", "question": "In the 2003 final, what is asked about ranking features by mutual information for a linear classifier?", "gold_chunk_ids": ["1c1a8e174a07d95d8253199653bc84a4"], "answerable": true, "type": "direct"}
+{"id": "q23", "question": "How do underfitting and the bias-variance tradeoff relate to a model's ability to generalise?", "gold_chunk_ids": ["56391c9432a93b6948544d94b907ca45", "20bc61b93dc0a5591d41b057561efdf6"], "answerable": true, "type": "multi-chunk"}
+{"id": "q24", "question": "Contrast supervised, unsupervised and reinforcement learning.", "gold_chunk_ids": ["61dc6e089c5788da8c148363fc645d8a", "d1d90d7b0ba81ac0238bd5c367ce0556", "14ebfd8b5a53e3bc266d63200c4a81ee"], "answerable": true, "type": "multi-chunk"}
+{"id": "q25", "question": "Who won the FIFA World Cup in 2018?", "gold_chunk_ids": [], "answerable": false, "type": "unanswerable"}
+{"id": "q26", "question": "What is the recipe for chocolate chip cookies?", "gold_chunk_ids": [], "answerable": false, "type": "unanswerable"}
+{"id": "q27", "question": "What is the capital city of Australia?", "gold_chunk_ids": [], "answerable": false, "type": "unanswerable"}
+{"id": "q28", "question": "How do mRNA vaccines work?", "gold_chunk_ids": [], "answerable": false, "type": "unanswerable"}
+{"id": "q29", "question": "How do I configure pod autoscaling in Kubernetes?", "gold_chunk_ids": [], "answerable": false, "type": "unanswerable"}
+{"id": "q30", "question": "What is the Python global interpreter lock?", "gold_chunk_ids": [], "answerable": false, "type": "unanswerable"}
+{"id": "q31", "question": "What is the boiling point of tungsten?", "gold_chunk_ids": [], "answerable": false, "type": "unanswerable"}
