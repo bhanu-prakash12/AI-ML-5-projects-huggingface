@@ -1,0 +1,43 @@
+seed: 42
+profile: small
+paths: {data: data, corpus: data/corpus, chroma: chroma, reports: reports, eval: eval}
+models:
+  embedding: {name: BAAI/bge-small-en-v1.5, revision: 5c38ec7c405ec4b44b94cc5a9bb96e735b38267a, query_instruction: "Represent this sentence for searching relevant passages: "}
+  llm: {name: Qwen/Qwen2.5-1.5B-Instruct, revision: 989aa7980e4cf806f80c7fef2b1adb7bc71aa306}
+  llm_fallback: {name: Qwen/Qwen2.5-0.5B-Instruct, revision: 7ae557604adf67be50417f59c2c2f167def9a775}
+chunking:
+  notes: {size: 800, overlap: 120}
+retrieval: {k: 4, fetch_k: 12, mmr: true, score_threshold: 0.64}
+generation: {max_new_tokens: 400, temperature: 0.0, context_budget_tokens: 3000, history_turns: 3}
+corpus:
+  subject: machine learning
+  user_agent: "ai-eng-projects-study-assistant/0.1 (educational; local use)"
+  wikipedia_titles:
+    - "Machine learning"
+    - "Supervised learning"
+    - "Unsupervised learning"
+    - "Reinforcement learning"
+    - "Linear regression"
+    - "Logistic regression"
+    - "Decision tree learning"
+    - "Random forest"
+    - "Support vector machine"
+    - "Naive Bayes classifier"
+    - "K-nearest neighbors algorithm"
+    - "K-means clustering"
+    - "Principal component analysis"
+    - "Gradient descent"
+    - "Overfitting"
+    - "Cross-validation (statistics)"
+    - "Regularization (mathematics)"
+    - "Artificial neural network"
+    - "Backpropagation"
+    - "Bias–variance tradeoff"
+  exam_urls:  # MIT OCW 6.867 (CC BY-NC-SA 4.0), see DECISIONS.md
+    - {file: mit_6867_final_2004.pdf, url: "https://ocw.mit.edu/courses/6-867-machine-learning-fall-2006/57667e1d2442cc589da5051663606fc6_final_f04.pdf"}
+    - {file: mit_6867_final_2003.pdf, url: "https://ocw.mit.edu/courses/6-867-machine-learning-fall-2006/438614c2e5f2a2871b7ef89ffb506c45_final_f03.pdf"}
+api: {port: 8000}
+ui: {port: 7860}
+profiles:
+  small: {llm: llm, max_concurrent: 1}
+  standard: {llm: llm, max_concurrent: 2}

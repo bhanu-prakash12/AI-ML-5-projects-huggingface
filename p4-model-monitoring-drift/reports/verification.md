@@ -1,0 +1,8 @@
+# p4 verification (2026-10-11)
+- `make verify`: ruff clean, 13 tests pass, smoke ok (/health, /predict logged, /feedback joined) -> rc 0.
+- Clean run (`reports/clean/status.json`, no scenario, drift ref = days 1-2): windows 3-9 no alert (drift share 0.00-0.28, PR-AUC 0.756-0.940); window 10 alerts on drift share 0.38 (slow natural drift, 0 frauds -> no perf check). Evaluated honestly: 1 false alert in 8 clean windows.
+- Scenario B from day 6 (`reports/scenB/`): windows 3-5 no alert; window 6 (injection day) alert: drift share 0.34, PR-AUC 0.393 (-51% vs baseline 0.801). Detected in 0 windows after injection (<= 2 required). PR-AUC falls to 0.247 by window 9. Labels for window 6 arrive with window 7 (lag 1 day), so the PR-AUC half of the alert is available one day later; drift share alerts same day.
+- Retrain (`reports/scenB/retrain.json`): trained on days 1-8 (17,706 labelled rows, 245 frauds), evaluated on window 9 (53 frauds): champion v1 PR-AUC 0.247, challenger v2 0.979 -> promoted (rule: improve >= 0.02). Caveat: the synthetic cluster is trivially learnable once labelled, so 0.979 is an upper bound for a real new fraud pattern.
+- Dashboard: Gradio on :7864 returned HTTP 200 and reads reports/status.json.
+- Cost: simulate ~42 s (22,132 predictions via API), monitor ~71 s (8 Evidently reports), baseline training peak RAM 725 MB.
+- Demo-ready pass (2026-10-11, macOS): `python run.py verify` and `make verify` green (ruff clean, 26 tests, smoke via scripts/smoke.py). `python run.py demo` (scenario B, day 6) reproduced the recorded numbers: window 6 alert (drift share 0.34, PR-AUC 0.393), retrain champion 0.247 vs challenger 0.979 (dry run). Dashboard served HTTP 200 on :7864. Windows: not run, branches unit-tested only.

@@ -1,0 +1,27 @@
+seed: 42
+profile: small
+domain: medical
+paths: {data: data, artifacts: artifacts, reports: reports}
+dataset:
+  name: keivalya/MedQuad-MedicalQnADataset
+  revision: 5b0961fbaa6d7f9c344c5d59c29943fb900c2eca
+  file: medDataset_processed.csv
+  max_tokens: 384
+  min_answer_chars: 80
+model: {name: Qwen/Qwen2.5-0.5B-Instruct, revision: 7ae557604adf67be50417f59c2c2f167def9a775}
+system_prompt: >-
+  You are a careful medical information assistant. Give general, educational answers
+  based on well-established knowledge. You are not a doctor and do not give diagnoses or
+  personal treatment advice.
+disclaimer: "Educational information only, not medical advice. Consult a qualified clinician."
+baseline: {max_new_tokens: 200, mlflow_run: false}
+lora: {r: 8, alpha: 16, dropout: 0.05, targets: [q_proj, k_proj, v_proj, o_proj]}
+train: {lr: 2.0e-4, epochs: 1, batch: 1, grad_accum: 8, save_steps: 10, max_seq_len: 384, eta_ask_minutes: 60}
+mlflow: {uri: "sqlite:///mlflow.db", experiment: p3-medical-lora}
+serve: {max_new_tokens: 200}
+api: {port: 8003}
+ui: {port: 7863}
+mlflow_ui: {port: 5003}
+profiles:
+  small: {train: 300, val: 50, test: 50}
+  standard: {train: 2000, val: 200, test: 100}

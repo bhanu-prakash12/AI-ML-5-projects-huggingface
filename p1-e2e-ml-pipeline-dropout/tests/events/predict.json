@@ -1,0 +1,28 @@
+{
+  "version": "2.0",
+  "routeKey": "POST /predict",
+  "rawPath": "/predict",
+  "rawQueryString": "",
+  "headers": {
+    "content-type": "application/json",
+    "host": "example.lambda-url.local"
+  },
+  "requestContext": {
+    "accountId": "000000000000",
+    "apiId": "local",
+    "domainName": "example.lambda-url.local",
+    "http": {
+      "method": "POST",
+      "path": "/predict",
+      "protocol": "HTTP/1.1",
+      "sourceIp": "127.0.0.1",
+      "userAgent": "local-test"
+    },
+    "requestId": "local-1",
+    "stage": "$default",
+    "time": "11/Oct/2026:00:00:00 +0000",
+    "timeEpoch": 1791676800000
+  },
+  "body": "{\"application_mode\": 1.0, \"application_order\": 0.0, \"course\": 1.0, \"daytime_evening_attendance\": 0.0, \"previous_qualification\": 1.0, \"previous_qualification_grade\": 0.0, \"mother_s_qualification\": 1.0, \"father_s_qualification\": 1.0, \"mother_s_occupation\": 0.0, \"father_s_occupation\": 0.0, \"admission_grade\": 0.0, \"displaced\": 0.0, \"debtor\": 0.0, \"tuition_fees_up_to_date\": 0.0, \"scholarship_holder\": 0.0, \"unemployment_rate\": 0.0, \"inflation_rate\": -5.0, \"gdp\": -10.0, \"curricular_units_1st_sem_credited\": 0.0, \"curricular_units_1st_sem_enrolled\": 0.0, \"curricular_units_1st_sem_evaluations\": 0.0, \"curricular_units_1st_sem_approved\": 0.0, \"curricular_units_1st_sem_without_evaluations\": 0.0, \"curricular_units_1st_sem_grade\": 0.0, \"curricular_units_2nd_sem_credited\": 0.0, \"curricular_units_2nd_sem_enrolled\": 0.0, \"curricular_units_2nd_sem_evaluations\": 0.0, \"curricular_units_2nd_sem_approved\": 0.0, \"curricular_units_2nd_sem_without_evaluations\": 0.0, \"curricular_units_2nd_sem_grade\": 0.0}",
+  "isBase64Encoded": false
+}

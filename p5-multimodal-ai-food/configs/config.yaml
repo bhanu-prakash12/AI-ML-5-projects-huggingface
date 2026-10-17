@@ -1,0 +1,12 @@
+seed: 42
+profile: small   # small (8 GB, default) | standard (16 GB+)
+paths: {data: data, artifacts: artifacts, reports: reports}
+ports: {api: 8005, ui: 7865, mlflow: 5005}
+models:
+  clip: {repo: laion/CLIP-ViT-B-32-laion2B-s34B-b79K, revision: 1a25a446712ba5ee05982a381eed697ef9b435cf, arch: ViT-B-32, weights: open_clip_model.safetensors}
+  vlm: {repo: HuggingFaceTB/SmolVLM-500M-Instruct, revision: a7da5b986cb59b408707209984f360a5f4ad7e47}
+  # standard profile only (not downloaded here): Qwen/Qwen2-VL-2B-Instruct
+vlm: {max_new_tokens: 350, max_image_px: 384, image_splitting: false}
+eval: {n_images: 300, split: validation}
+api: {max_upload_bytes: 5242880, max_image_side: 768, top_k: 3}
+nutrition: {fdc_url: "https://api.nal.usda.gov/fdc/v1/foods/search", data_types: ["Foundation", "SR Legacy", "Survey (FNDDS)"]}

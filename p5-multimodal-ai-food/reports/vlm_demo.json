@@ -1,0 +1,211 @@
+{
+ "summary": {
+  "n": 3,
+  "valid_json": 3,
+  "needed_retry": 0,
+  "load_s": 6.6,
+  "total_ms_median": 6548,
+  "total_ms_max": 7585,
+  "vlm_ms_median": 6487
+ },
+ "rows": [
+  {
+   "file": "0000.jpg",
+   "dish": "greek_salad",
+   "top3": [
+    {
+     "label": "cheese_plate",
+     "name": "cheese plate",
+     "prob": 1.0
+    },
+    {
+     "label": "greek_salad",
+     "name": "greek salad",
+     "prob": 0.0
+    },
+    {
+     "label": "cheesecake",
+     "name": "cheesecake",
+     "prob": 0.0
+    }
+   ],
+   "vlm": {
+    "dish": "greek_salad",
+    "why": "The plate contains a variety of food items, including cheese, Greek salad, and cheesecake.",
+    "visible_ingredients": [
+     "Tomatoes",
+     "cheese",
+     "olives"
+    ],
+    "portion_estimate": {
+     "description": "small portion (visual guess)",
+     "approx_grams": 150,
+     "is_estimate": true
+    },
+    "recipes": [
+     {
+      "title": "Greek Salad",
+      "summary": "Greek Salad is a salad made with tomatoes, cucumbers, onions, feta cheese, and olives."
+     },
+     {
+      "title": "Greek Salad",
+      "summary": "Greek Salad is a salad made with tomatoes, cucumbers, onions, feta cheese, and olives."
+     }
+    ]
+   },
+   "vlm_error": null,
+   "vlm_attempts": 1,
+   "nutrition": {
+    "class": "greek_salad",
+    "fdc_id": "2709830",
+    "matched_description": "Greek Salad, no dressing",
+    "source_url": "https://fdc.nal.usda.gov/food-details/2709830/nutrients",
+    "per_100g": {
+     "kcal": 48.0,
+     "protein_g": 2.75,
+     "fat_g": 2.26,
+     "carbs_g": 4.35,
+     "fiber_g": 1.5
+    }
+   },
+   "timings_ms": {
+    "decode_resize": 10,
+    "clip": 180,
+    "vlm": 7395,
+    "total": 7585
+   }
+  },
+  {
+   "file": "0100.jpg",
+   "dish": "spaghetti_bolognese",
+   "top3": [
+    {
+     "label": "spaghetti_bolognese",
+     "name": "spaghetti bolognese",
+     "prob": 0.9952
+    },
+    {
+     "label": "spaghetti_carbonara",
+     "name": "spaghetti carbonara",
+     "prob": 0.0047
+    },
+    {
+     "label": "lasagna",
+     "name": "lasagna",
+     "prob": 0.0
+    }
+   ],
+   "vlm": {
+    "dish": "spaghetti_bolognese",
+    "why": "The food is spaghetti bolognese.",
+    "visible_ingredients": [
+     "Tomato sauce",
+     "ground beef",
+     "pasta"
+    ],
+    "portion_estimate": {
+     "description": "small portion (visual guess)",
+     "approx_grams": 250,
+     "is_estimate": true
+    },
+    "recipes": [
+     {
+      "title": "Spaghetti Bolognese",
+      "summary": "Spaghetti Bolognese is a hearty pasta dish made with ground beef, tomato sauce, and a generous amount of tomato sauce."
+     },
+     {
+      "title": "Spaghetti and meatballs",
+      "summary": "Spaghetti and meatballs are a classic Italian dish made with spaghetti noodles, ground meat, and a tomato-based sauce."
+     }
+    ]
+   },
+   "vlm_error": null,
+   "vlm_attempts": 1,
+   "nutrition": {
+    "class": "spaghetti_bolognese",
+    "fdc_id": "2706470",
+    "matched_description": "Spaghetti sauce with meat",
+    "source_url": "https://fdc.nal.usda.gov/food-details/2706470/nutrients",
+    "per_100g": {
+     "kcal": 90.0,
+     "protein_g": 5.94,
+     "fat_g": 4.36,
+     "carbs_g": 6.54,
+     "fiber_g": 1.5
+    }
+   },
+   "timings_ms": {
+    "decode_resize": 1,
+    "clip": 60,
+    "vlm": 6487,
+    "total": 6548
+   }
+  },
+  {
+   "file": "0200.jpg",
+   "dish": "lasagna",
+   "top3": [
+    {
+     "label": "lasagna",
+     "name": "lasagna",
+     "prob": 0.1996
+    },
+    {
+     "label": "chicken_quesadilla",
+     "name": "chicken quesadilla",
+     "prob": 0.162
+    },
+    {
+     "label": "ravioli",
+     "name": "ravioli",
+     "prob": 0.1537
+    }
+   ],
+   "vlm": {
+    "dish": "lasagna",
+    "why": "The food is lasagna, chicken quesadilla, and ravioli.",
+    "visible_ingredients": [
+     "Cheese",
+     "Tomato",
+     "Basil"
+    ],
+    "portion_estimate": {
+     "description": "small portion (visual guess)",
+     "approx_grams": 2200,
+     "is_estimate": true
+    },
+    "recipes": [
+     {
+      "title": "Lasagna",
+      "summary": "Lasagna is a layered pasta dish made with layers of pasta, meat sauce, cheese, and various toppings."
+     },
+     {
+      "title": "Lasagna",
+      "summary": "Lasagna is a layered pasta dish made with layers of pasta, meat sauce, cheese, and various toppings."
+     }
+    ]
+   },
+   "vlm_error": null,
+   "vlm_attempts": 1,
+   "nutrition": {
+    "class": "lasagna",
+    "fdc_id": "2708750",
+    "matched_description": "Lasagna with meat",
+    "source_url": "https://fdc.nal.usda.gov/food-details/2708750/nutrients",
+    "per_100g": {
+     "kcal": 139.0,
+     "protein_g": 7.45,
+     "fat_g": 4.97,
+     "carbs_g": 16.17,
+     "fiber_g": 1.6
+    }
+   },
+   "timings_ms": {
+    "decode_resize": 1,
+    "clip": 35,
+    "vlm": 5672,
+    "total": 5708
+   }
+  }
+ ]
+}

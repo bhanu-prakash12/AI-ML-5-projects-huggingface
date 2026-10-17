@@ -1,0 +1,176 @@
+[
+  {
+    "window": 3,
+    "n": 2213,
+    "n_fraud": 12,
+    "labelled": true,
+    "drift_share": 0.06896551724137931,
+    "n_drifted": 2,
+    "tests_passed": true,
+    "psi_score": 0.010520856144125163,
+    "mean_score": 0.004067347116812509,
+    "pr_auc": 0.7875907448996784,
+    "baseline_pr_auc": 0.8014087887277451,
+    "model_versions": [
+      "1"
+    ],
+    "report": "windows/window_03.html",
+    "alert": false,
+    "reasons": [],
+    "perf_skipped": null
+  },
+  {
+    "window": 4,
+    "n": 2213,
+    "n_fraud": 10,
+    "labelled": true,
+    "drift_share": 0.0,
+    "n_drifted": 0,
+    "tests_passed": true,
+    "psi_score": 0.007442462903963449,
+    "mean_score": 0.0031638695134262726,
+    "pr_auc": 0.8030601092896174,
+    "baseline_pr_auc": 0.8014087887277451,
+    "model_versions": [
+      "1"
+    ],
+    "report": "windows/window_04.html",
+    "alert": false,
+    "reasons": [],
+    "perf_skipped": null
+  },
+  {
+    "window": 5,
+    "n": 2213,
+    "n_fraud": 14,
+    "labelled": true,
+    "drift_share": 0.034482758620689655,
+    "n_drifted": 1,
+    "tests_passed": true,
+    "psi_score": 0.006320231383679629,
+    "mean_score": 0.004328020923589196,
+    "pr_auc": 0.8190056904414479,
+    "baseline_pr_auc": 0.8014087887277451,
+    "model_versions": [
+      "1"
+    ],
+    "report": "windows/window_05.html",
+    "alert": false,
+    "reasons": [],
+    "perf_skipped": null
+  },
+  {
+    "window": 6,
+    "n": 2214,
+    "n_fraud": 62,
+    "labelled": true,
+    "drift_share": 0.3448275862068966,
+    "n_drifted": 10,
+    "tests_passed": false,
+    "psi_score": 0.008263003725745488,
+    "mean_score": 0.006329470897245359,
+    "pr_auc": 0.392690640682983,
+    "baseline_pr_auc": 0.8014087887277451,
+    "model_versions": [
+      "1"
+    ],
+    "report": "windows/window_06.html",
+    "alert": true,
+    "reasons": [
+      "drift_share 0.34 > 0.3",
+      "pr_auc 0.393 dropped 51% vs baseline 0.801"
+    ],
+    "perf_skipped": null
+  },
+  {
+    "window": 7,
+    "n": 2213,
+    "n_fraud": 67,
+    "labelled": true,
+    "drift_share": 0.3448275862068966,
+    "n_drifted": 10,
+    "tests_passed": false,
+    "psi_score": 0.015328185883402594,
+    "mean_score": 0.008261103127929775,
+    "pr_auc": 0.3835303484957506,
+    "baseline_pr_auc": 0.8014087887277451,
+    "model_versions": [
+      "1"
+    ],
+    "report": "windows/window_07.html",
+    "alert": true,
+    "reasons": [
+      "drift_share 0.34 > 0.3",
+      "pr_auc 0.384 dropped 52% vs baseline 0.801"
+    ],
+    "perf_skipped": null
+  },
+  {
+    "window": 8,
+    "n": 2213,
+    "n_fraud": 59,
+    "labelled": true,
+    "drift_share": 0.5172413793103449,
+    "n_drifted": 15,
+    "tests_passed": false,
+    "psi_score": 0.00959868498536496,
+    "mean_score": 0.003910093316321125,
+    "pr_auc": 0.27927851449105007,
+    "baseline_pr_auc": 0.8014087887277451,
+    "model_versions": [
+      "1"
+    ],
+    "report": "windows/window_08.html",
+    "alert": true,
+    "reasons": [
+      "drift_share 0.52 > 0.3",
+      "pr_auc 0.279 dropped 65% vs baseline 0.801"
+    ],
+    "perf_skipped": null
+  },
+  {
+    "window": 9,
+    "n": 2213,
+    "n_fraud": 53,
+    "labelled": true,
+    "drift_share": 0.5862068965517241,
+    "n_drifted": 17,
+    "tests_passed": false,
+    "psi_score": 0.007304959518077183,
+    "mean_score": 0.00231989106777841,
+    "pr_auc": 0.24749627831252832,
+    "baseline_pr_auc": 0.8014087887277451,
+    "model_versions": [
+      "1"
+    ],
+    "report": "windows/window_09.html",
+    "alert": true,
+    "reasons": [
+      "drift_share 0.59 > 0.3",
+      "pr_auc 0.247 dropped 69% vs baseline 0.801"
+    ],
+    "perf_skipped": null
+  },
+  {
+    "window": 10,
+    "n": 2213,
+    "n_fraud": 0,
+    "labelled": false,
+    "drift_share": 0.6206896551724138,
+    "n_drifted": 18,
+    "tests_passed": false,
+    "psi_score": 0.007537038076658838,
+    "mean_score": 0.0035940798690552553,
+    "pr_auc": null,
+    "baseline_pr_auc": 0.8014087887277451,
+    "model_versions": [
+      "1"
+    ],
+    "report": "windows/window_10.html",
+    "alert": true,
+    "reasons": [
+      "drift_share 0.62 > 0.3"
+    ],
+    "perf_skipped": "labels pending"
+  }
+]

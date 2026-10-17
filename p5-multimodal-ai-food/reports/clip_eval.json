@@ -1,0 +1,11 @@
+{
+ "n_images": 300,
+ "n_classes": 101,
+ "top1": 0.83,
+ "top5": 0.97,
+ "templates": 5,
+ "device": "mps",
+ "seconds_per_image": 0.0218,
+ "peak_rss_mb": 1999.0,
+ "note": "balanced sample from streamed ethz/food101 validation, shuffled seed 42"
+}

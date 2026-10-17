@@ -1,0 +1,22 @@
+# P1 Decisions
+| Date | Decision | Reason |
+|---|---|---|
+| 2026-10-11 | Laptop RAM 8 GB → `small` profile for all projects | User answer |
+| 2026-10-11 | Add `pyarrow==18.1.0` (parquet) and `ucimlrepo` as data-only dep | Spec omits it; dry-run resolves; architect review |
+| 2026-10-11 | Project dir is `p1/`, package `dropout_risk` | build.md loads `<pN>/PLAN.md` |
+| 2026-10-11 | D1 Prediction point: all features (end of year 2); document as late-stage model, not an early warning | User answer |
+| 2026-10-11 | D2 Target: binary Dropout vs rest | User answer (recommended) |
+| 2026-10-11 | D3 Sensitive features (gender, age, nationality etc.) excluded from model, kept in splits for fairness slicing only | User answer (recommended) |
+| 2026-10-11 | D4 Phase 4: Lambda local only (handler, in-process test, zip size); NO AWS deploy, boto3 not installed | User answer |
+| 2026-10-11 | Architect review: serve LightGBM only (XGBoost tracked comparison); threshold fallback best-F1; resolve MLflow paths against project root; model_version in preprocess.json; fairness min group n=30; add leakage/validation/stratification unit tests | Architect review |
+| 2026-10-11 | Phase 1: stratify split on 3-class target; binary `dropout` column added to all splits; Makefile exports PYTHONPATH=src; `make smoke` is a stub until phase 3 | Phase 1 build |
+| 2026-10-11 | Pin transitive `sqlalchemy==2.0.36` in requirements.txt (uv resolved 2.1.4, which breaks mlflow 2.19.0 import) | User answer (option a) |
+| 2026-10-11 | D3 sensitive list: gender, age_at_enrollment, nacionality, international, marital_status, educational_special_needs excluded from model; kept in splits for fairness only | User answer (broad list) |
+| 2026-10-11 | Phase 2: champion LightGBM (best val PR-AUC) served; XGBoost tracked for comparison; threshold 0.227 chosen on val (max recall at precision>=0.6, no fallback) | Phase 2 build |
+| 2026-10-11 | Phase 3: risk tiers: high p>=tuned threshold, medium p>=threshold/2, else low; request schema built from preprocess.json ranges (422 on out-of-range); Gradio form skipped (optional), `make ui` prints not used; API tests use a tiny in-test booster (no dependency on artifacts/) | Phase 3 build |
+| 2026-10-11 | Phase 4 (D4 local only): `lambda_handler.py` (Mangum, lifespan auto, model dir via P1_MODEL_DIR, default artifacts/model); `requirements-lambda.txt` (lightgbm, numpy, fastapi, pydantic, pydantic-settings, pyyaml, mangum; scipy pulled by lightgbm); `make package` builds build/lambda.zip; mangum==0.19.0 added to requirements.txt; NO boto3, NO deploy/teardown scripts | Phase 4 build |
+| 2026-10-11 | uv 0.5.11 rejects `aarch64-manylinux2014`; use equivalent `aarch64-manylinux_2_17` (manylinux2014 == glibc 2.17) | Phase 4 build |
+| 2026-10-11 | Package size (aarch64, py3.11): 185 MB unzipped (<250 MB OK), zip 52.7 MB. Zip exceeds the 50 MB direct-upload limit, so a future deploy must go via S3 (limit 250 MB unzipped applies). Biggest: scipy 88 MB + scipy.libs 27 MB, numpy 23 MB + numpy.libs 27 MB | Phase 4 build |
+| 2026-10-11 | libgomp question (architect review), verified as far as possible locally: aarch64 `lib_lightgbm.so` NEEDS libgomp.so.1, libstdc++.so.6, libgcc_s.so.1 (none bundled in the wheel); max symbol versions GLIBC_2.17, GLIBCXX_3.4.19, GOMP_4.5 (compatible with AL2023 glibc 2.34). Cannot dlopen an aarch64-linux .so on macOS and no Docker, so presence of libgomp.so.1 in the Lambda python3.11 runtime is UNVERIFIED. Mitigation if import fails on first real deploy: copy an aarch64 libgomp (e.g. from scikit-learn's manylinux wheel `*.libs/`) to `lib/libgomp.so.1` in the zip (/var/task/lib is on LD_LIBRARY_PATH). In-process handler test runs with the macOS LightGBM build, so it validates logic, not the Linux import | Phase 4 build |
+| 2026-10-11 | Verify fresh-build step runs in a throwaway copy of p1 in the scratchpad (no .venv); real p1 untouched; network allowed for make setup/data | User answer |
+| 2026-10-11 | Demo-readiness: added run.py (stdlib cross-platform runner), scripts/smoke.py + build_lambda.py replacing bash, console.py (rich, plain fallback), Gradio UI scripts/ui.py on 7861 (`ui.port` 7860 -> 7861 to avoid p-collisions), preset students in samples.py, API description/examples. train.py now measures wall time and peak RSS itself (`resource`, skipped on Windows) instead of `/usr/bin/time -l`. Retraining created registry version 3 with identical metrics. Windows verified only by monkeypatched unit tests (no Windows machine) | Demo-ready pass |

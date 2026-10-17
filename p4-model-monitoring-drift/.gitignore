@@ -1,0 +1,4 @@
+reports/windows/
+reports/*/windows/
+reports/demo/
+.run/

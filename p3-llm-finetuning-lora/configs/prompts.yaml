@@ -1,0 +1,22 @@
+domain:  # 10 fixed qualitative medical prompts
+  - What are the symptoms of type 2 diabetes?
+  - How is high blood pressure diagnosed?
+  - What causes iron deficiency anemia?
+  - What are the treatments for asthma?
+  - Who is at risk for osteoporosis?
+  - What is glaucoma and how is it treated?
+  - How can I prevent kidney stones?
+  - What are the complications of untreated hypothyroidism?
+  - How is celiac disease diagnosed?
+  - What is the outlook for people with Parkinson disease?
+general:  # 10 non-medical prompts for the forgetting check
+  - What is the capital of France?
+  - Explain what a binary search does in two sentences.
+  - Write a Python function that reverses a string.
+  - What is 17 multiplied by 6?
+  - Who wrote the play Romeo and Juliet?
+  - Translate "good morning" into Spanish.
+  - Why is the sky blue?
+  - Give me three tips for a job interview.
+  - Summarize the plot of Cinderella in two sentences.
+  - What is the difference between a list and a tuple in Python?
