@@ -1,4 +1,5 @@
 """FastAPI /ingest /ask (SSE) /ask/simple (JSON) /health. One process owns both models (lifespan, workers=1)."""
+
 from __future__ import annotations
 
 import asyncio
@@ -25,10 +26,22 @@ class AskRequest(BaseModel):
     history: list[tuple[str, str]] = Field(default_factory=list, max_length=10)
     doc_type: Literal["notes", "exam"] | None = None
 
-    model_config = {"json_schema_extra": {"examples": [
-        {"question": "What is the bias-variance tradeoff?", "history": [], "doc_type": None},
-        {"question": "Who won the 1998 football world cup?", "history": [], "doc_type": "notes"},
-    ]}}
+    model_config = {
+        "json_schema_extra": {
+            "examples": [
+                {
+                    "question": "What is the bias-variance tradeoff?",
+                    "history": [],
+                    "doc_type": None,
+                },
+                {
+                    "question": "Who won the 1998 football world cup?",
+                    "history": [],
+                    "doc_type": "notes",
+                },
+            ]
+        }
+    }
 
 
 class Source(BaseModel):
@@ -47,11 +60,28 @@ class AskResponse(BaseModel):
     citations: list[str] = Field(default_factory=list)
     sources: list[Source] = Field(default_factory=list)
 
-    model_config = {"json_schema_extra": {"examples": [{
-        "answer": "The bias-variance tradeoff ... [wiki_bias_variance_tradeoff.md:1]", "refused": False,
-        "top_score": 0.86, "citations": ["wiki_bias_variance_tradeoff.md:1"],
-        "sources": [{"label": "wiki_bias_variance_tradeoff.md:1", "source": "wiki_bias_variance_tradeoff.md", "page": 1,
-                     "doc_type": "notes", "score": 0.86, "snippet": "..."}]}]}}
+    model_config = {
+        "json_schema_extra": {
+            "examples": [
+                {
+                    "answer": "The bias-variance tradeoff ... [wiki_bias_variance_tradeoff.md:1]",
+                    "refused": False,
+                    "top_score": 0.86,
+                    "citations": ["wiki_bias_variance_tradeoff.md:1"],
+                    "sources": [
+                        {
+                            "label": "wiki_bias_variance_tradeoff.md:1",
+                            "source": "wiki_bias_variance_tradeoff.md",
+                            "page": 1,
+                            "doc_type": "notes",
+                            "score": 0.86,
+                            "snippet": "...",
+                        }
+                    ],
+                }
+            ]
+        }
+    }
 
 
 class HealthResponse(BaseModel):
@@ -98,10 +128,14 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     yield
 
 
-app = FastAPI(title="Study Assistant", description=DESCRIPTION, version="0.1", lifespan=lifespan)
+app = FastAPI(
+    title="Study Assistant", description=DESCRIPTION, version="0.1", lifespan=lifespan
+)
 
 
-def stream_events(store: Any, req: AskRequest, cfg: dict[str, Any]) -> Iterator[dict[str, Any]]:
+def stream_events(
+    store: Any, req: AskRequest, cfg: dict[str, Any]
+) -> Iterator[dict[str, Any]]:
     from study_assistant import rag
 
     return rag.ask_stream(store, req.question, req.history, req.doc_type, cfg)
@@ -111,13 +145,24 @@ def sse(event: str, data: Any) -> str:
     return f"event: {event}\ndata: {json.dumps(data)}\n\n"
 
 
-@app.get("/health", response_model=HealthResponse, summary="Is the API ready (models loaded)?")
+@app.get(
+    "/health",
+    response_model=HealthResponse,
+    summary="Is the API ready (models loaded)?",
+)
 def health() -> dict[str, Any]:
     ok = hasattr(app.state, "res")
-    return {"status": "ok" if ok else "loading", "profile": app.state.cfg["profile"] if ok else None}
+    return {
+        "status": "ok" if ok else "loading",
+        "profile": app.state.cfg["profile"] if ok else None,
+    }
 
 
-@app.post("/ask", summary="Ask a question (SSE stream: sources, token, done)", response_class=StreamingResponse)
+@app.post(
+    "/ask",
+    summary="Ask a question (SSE stream: sources, token, done)",
+    response_class=StreamingResponse,
+)
 async def ask(req: AskRequest) -> StreamingResponse:
     if not hasattr(app.state, "res"):
         raise HTTPException(503, "models not loaded")
@@ -128,21 +173,29 @@ async def ask(req: AskRequest) -> StreamingResponse:
             it = stream_events(store, req, cfg)
             sentinel = object()
             try:
-                while (ev := await run_in_threadpool(next, it, sentinel)) is not sentinel:
+                while (
+                    ev := await run_in_threadpool(next, it, sentinel)
+                ) is not sentinel:
                     if "sources" in ev:
                         yield sse("sources", ev["sources"])
                     elif "token" in ev:
                         yield sse("token", ev["token"])
                     else:
                         yield sse("done", ev["done"])
-            except Exception as e:  # surface as an SSE error event instead of a broken stream
+            except (
+                Exception
+            ) as e:  # surface as an SSE error event instead of a broken stream
                 log.exception("ask failed")
                 yield sse("error", str(e))
 
     return StreamingResponse(gen(), media_type="text/event-stream")
 
 
-@app.post("/ask/simple", response_model=AskResponse, summary="Ask a question (single JSON reply, for Swagger demos)")
+@app.post(
+    "/ask/simple",
+    response_model=AskResponse,
+    summary="Ask a question (single JSON reply, for Swagger demos)",
+)
 async def ask_simple(req: AskRequest) -> AskResponse:
     if not hasattr(app.state, "res"):
         raise HTTPException(503, "models not loaded")
@@ -159,8 +212,13 @@ async def ask_simple(req: AskRequest) -> AskResponse:
                 answer.append(ev["token"])
             else:
                 done = ev["done"]
-        return AskResponse(answer="".join(answer), refused=bool(done.get("refused")), top_score=done.get("top_score"),
-                           citations=done.get("citations", []), sources=sources)
+        return AskResponse(
+            answer="".join(answer),
+            refused=bool(done.get("refused")),
+            top_score=done.get("top_score"),
+            citations=done.get("citations", []),
+            sources=sources,
+        )
 
     async with app.state.sem:
         try:
@@ -180,13 +238,19 @@ def run_ingest(cfg: dict[str, Any], store: Any) -> dict[str, int]:
     return {"chunks": stats["total_chunks"], "added": added}
 
 
-@app.post("/ingest", response_model=IngestResponse, summary="Re-chunk the corpus and add unseen chunks to Chroma")
+@app.post(
+    "/ingest",
+    response_model=IngestResponse,
+    summary="Re-chunk the corpus and add unseen chunks to Chroma",
+)
 async def ingest() -> dict[str, int]:
     if not hasattr(app.state, "res"):
         raise HTTPException(503, "models not loaded")
     if not INGEST_LOCK.acquire(blocking=False):
         raise HTTPException(409, "ingest already running")
     try:
-        return await run_in_threadpool(run_ingest, app.state.cfg, app.state.res["store"])
+        return await run_in_threadpool(
+            run_ingest, app.state.cfg, app.state.res["store"]
+        )
     finally:
         INGEST_LOCK.release()

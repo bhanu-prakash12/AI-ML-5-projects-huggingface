@@ -1,4 +1,5 @@
 """AWS Lambda entry point: Mangum adapts API Gateway / Function URL (HTTP v2) events to FastAPI."""
+
 import os
 from pathlib import Path
 
@@ -14,7 +15,9 @@ def build_handler(model_dir: Path | None = None) -> Mangum:
     return Mangum(create_app(d), lifespan="auto")
 
 
-def handler(event, context):  # pragma: no cover - thin wrapper, exercised via build_handler
+def handler(
+    event, context
+):  # pragma: no cover - thin wrapper, exercised via build_handler
     global _h
     if _h is None:
         _h = build_handler()

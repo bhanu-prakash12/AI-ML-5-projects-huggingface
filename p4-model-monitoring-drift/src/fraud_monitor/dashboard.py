@@ -1,4 +1,5 @@
 """Dashboard helpers (pure functions are unit-tested; Gradio only wires them)."""
+
 from __future__ import annotations
 
 import json
@@ -69,8 +70,14 @@ def table(df: pd.DataFrame) -> pd.DataFrame:
 
 def links(df: pd.DataFrame, out: Path | None = None) -> str:
     rep = out or config.path("reports")
-    return " ".join(f'<a href="/gradio_api/file={(rep / r).as_posix()}" target="_blank">window {w}{" (ALERT)" if a else ""}</a>'
-                    for w, r, a in zip(df.window, df.report, df.alert)) if not df.empty else ""
+    return (
+        " ".join(
+            f'<a href="/gradio_api/file={(rep / r).as_posix()}" target="_blank">window {w}{" (ALERT)" if a else ""}</a>'
+            for w, r, a in zip(df.window, df.report, df.alert)
+        )
+        if not df.empty
+        else ""
+    )
 
 
 INTRO = """
@@ -124,8 +131,10 @@ def build():
     def do_simulate(scenario, start_day, progress=gr.Progress()):
         t0 = time.time()
         res = pipeline.simulate(scenario, int(start_day), lambda d, n: progress(d / n, desc=f"day {d}/{n}"))
-        return (f"Simulated 10 days with scenario **{scenario}** from day {int(start_day)}: {res['sent']} predictions, "
-                f"{res['labels_fed']} labels fed back, {time.time() - t0:.0f}s. Next: **2. Monitor**.")
+        return (
+            f"Simulated 10 days with scenario **{scenario}** from day {int(start_day)}: {res['sent']} predictions, "
+            f"{res['labels_fed']} labels fed back, {time.time() - t0:.0f}s. Next: **2. Monitor**."
+        )
 
     def do_monitor(progress=gr.Progress()):
         if not pipeline.demo_db().exists():
@@ -134,8 +143,11 @@ def build():
         t0 = time.time()
         rows = pipeline.run_monitor()
         lines = [narrate.window_line(r)[1] for r in rows]
-        return (f"Monitored {len(rows)} windows in {time.time() - t0:.0f}s:\n\n" + "\n\n".join(f"- {x}" for x in lines)
-                + "\n\nNext: **3. Retrain**."), choices(LATEST_DEMO)
+        return (
+            f"Monitored {len(rows)} windows in {time.time() - t0:.0f}s:\n\n"
+            + "\n\n".join(f"- {x}" for x in lines)
+            + "\n\nNext: **3. Retrain**."
+        ), choices(LATEST_DEMO)
 
     def do_retrain(promote, progress=gr.Progress()):
         if not pipeline.demo_db().exists():
@@ -153,8 +165,11 @@ def build():
             scenario = gr.Radio(["A", "B", "C", "none"], value="B", label="Scenario")
             start_day = gr.Number(value=config.load()["scenario"]["start_day"], precision=0, label="Start day (1-10)")
             expect = gr.Textbox(SCENARIO_HELP["B"], label="What to expect", interactive=False)
-        gr.Examples([["B", 6, SCENARIO_HELP["B"]], ["A", 6, SCENARIO_HELP["A"]], ["C", 6, SCENARIO_HELP["C"]]],
-                    inputs=[scenario, start_day, expect], label="Ready samples (click one to fill the inputs)")
+        gr.Examples(
+            [["B", 6, SCENARIO_HELP["B"]], ["A", 6, SCENARIO_HELP["A"]], ["C", 6, SCENARIO_HELP["C"]]],
+            inputs=[scenario, start_day, expect],
+            label="Ready samples (click one to fill the inputs)",
+        )
         scenario.change(lambda s: SCENARIO_HELP[s], scenario, expect)
         with gr.Row():
             b1 = gr.Button("1. Simulate traffic", variant="primary")
@@ -164,7 +179,9 @@ def build():
             b4 = gr.Button("Reset champion to baseline")
         status = gr.Markdown("Status: idle. Start with **1. Simulate traffic**.")
         with gr.Row():
-            runs = gr.Dropdown(list(available_runs()), value=next(iter(available_runs()), None), label="Show results from")
+            runs = gr.Dropdown(
+                list(available_runs()), value=next(iter(available_runs()), None), label="Show results from"
+            )
             refresh = gr.Button("Reload results")
         gr.Markdown(PLOT_HELP)
         plot, tbl, html = gr.Plot(), gr.Dataframe(), gr.HTML()

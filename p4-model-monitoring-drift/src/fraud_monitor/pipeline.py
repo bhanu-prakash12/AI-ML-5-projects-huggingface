@@ -3,6 +3,7 @@
 The FastAPI app is driven through Starlette's TestClient, so the click-driven demo works with a single process
 (same code path as the real API: /predict/batch + /feedback/batch + SQLite log).
 """
+
 from __future__ import annotations
 
 import os

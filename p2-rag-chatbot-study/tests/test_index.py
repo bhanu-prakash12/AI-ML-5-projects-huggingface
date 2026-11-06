@@ -22,15 +22,24 @@ class FakeEmb:
 def make_store(tmp_path):
     from langchain_chroma import Chroma
 
-    return Chroma(collection_name="test_col", embedding_function=FakeEmb(), persist_directory=str(tmp_path),
-                  collection_metadata={"hnsw:space": "cosine"})
+    return Chroma(
+        collection_name="test_col",
+        embedding_function=FakeEmb(),
+        persist_directory=str(tmp_path),
+        collection_metadata={"hnsw:space": "cosine"},
+    )
 
 
 def chunks():
     return [
-        Chunk("gradient descent follows the gradient", {"source": "a.md", "doc_type": "notes", "page": None}),
+        Chunk(
+            "gradient descent follows the gradient",
+            {"source": "a.md", "doc_type": "notes", "page": None},
+        ),
         Chunk("a decision tree splits data", {"source": "b.md", "doc_type": "notes"}),
-        Chunk("kernel trick question", {"source": "e.pdf", "doc_type": "exam", "page": 2}),
+        Chunk(
+            "kernel trick question", {"source": "e.pdf", "doc_type": "exam", "page": 2}
+        ),
     ]
 
 

@@ -1,4 +1,5 @@
 """Tests for the demo-readiness pieces: console fallback, run.py paths, UI logic, API examples."""
+
 import importlib.util
 import sys
 from pathlib import Path
@@ -24,7 +25,9 @@ def test_console_plain_fallback(monkeypatch, capsys):
     console.kv_table({"k": "v"})
     console.note("p", "c", "s")
     out = capsys.readouterr().out
-    assert "== T ==" in out and "[1/2] go" in out and "OK   fine" in out and "a | b" in out
+    assert (
+        "== T ==" in out and "[1/2] go" in out and "OK   fine" in out and "a | b" in out
+    )
     assert "Pros:" in out and "At scale:" in out
 
 
@@ -55,7 +58,9 @@ def test_kill_pid_uses_taskkill_on_windows(monkeypatch):
 
 def test_stop_removes_pid_files(tmp_path, monkeypatch):
     killed = []
-    monkeypatch.setattr(run_mod, "kill_pid", lambda pid, os_name=None: killed.append(pid))
+    monkeypatch.setattr(
+        run_mod, "kill_pid", lambda pid, os_name=None: killed.append(pid)
+    )
     (tmp_path / "api.pid").write_text("42")
     (tmp_path / "bad.pid").write_text("x")
     run_mod.stop(tmp_path)
@@ -63,8 +68,22 @@ def test_stop_removes_pid_files(tmp_path, monkeypatch):
 
 
 def test_commands_cover_makefile_targets():
-    for c in ("setup", "data", "train", "eval", "serve", "ui", "mlflow-ui", "test", "lint",
-              "smoke", "verify", "demo", "stop", "clean"):
+    for c in (
+        "setup",
+        "data",
+        "train",
+        "eval",
+        "serve",
+        "ui",
+        "mlflow-ui",
+        "test",
+        "lint",
+        "smoke",
+        "verify",
+        "demo",
+        "stop",
+        "clean",
+    ):
         assert c in run_mod.COMMANDS
 
 

@@ -13,7 +13,9 @@ def test_venv_python_windows_and_posix(tmp_path):
     (tmp_path / ".venv" / "Scripts").mkdir(parents=True)
     (tmp_path / ".venv" / "Scripts" / "python.exe").write_text("")
     assert run.venv_python(tmp_path, "nt").endswith("Scripts/python.exe")
-    assert run.venv_python(tmp_path, "posix") == sys.executable  # no bin/python -> fallback
+    assert (
+        run.venv_python(tmp_path, "posix") == sys.executable
+    )  # no bin/python -> fallback
     (tmp_path / ".venv" / "bin").mkdir()
     (tmp_path / ".venv" / "bin" / "python").write_text("")
     assert run.venv_python(tmp_path, "posix").endswith("bin/python")
@@ -61,7 +63,9 @@ def test_device_order(monkeypatch):
     assert device.get_device() == "mps"
     monkeypatch.setattr(torch.backends.mps, "is_available", lambda: False)
     assert device.get_device() == "cpu"
-    assert device.dtype_name("cuda") == "float16" and device.dtype_name("cpu") == "float32"
+    assert (
+        device.dtype_name("cuda") == "float16" and device.dtype_name("cpu") == "float32"
+    )
 
 
 def test_api_port_env(monkeypatch):

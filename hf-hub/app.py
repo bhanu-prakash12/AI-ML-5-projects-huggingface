@@ -2,6 +2,7 @@
 
 `spaces` is imported first (ZeroGPU requirement). Launched via Blocks.launch() so ZeroGPU can detect @spaces.GPU functions.
 """
+
 import asyncio
 import logging
 import os
@@ -23,8 +24,13 @@ from hub import home, paths  # noqa: E402,F401
 from hub.theme import CSS, THEME  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(name)s %(message)s")
-TABS = [("p1", "P1 Dropout risk"), ("p2", "P2 Study assistant"), ("p3", "P3 Medical LoRA"),
-        ("p4", "P4 Drift monitor"), ("p5", "P5 Food Lens")]
+TABS = [
+    ("p1", "P1 Dropout risk"),
+    ("p2", "P2 Study assistant"),
+    ("p3", "P3 Medical LoRA"),
+    ("p4", "P4 Drift monitor"),
+    ("p5", "P5 Food Lens"),
+]
 
 # ---- p5: engine behind its own REST routes, inference inside a ZeroGPU function ----
 from food_lens import api as food_api  # noqa: E402
@@ -49,7 +55,9 @@ class GpuEngine:
 food_api.STATE["engine"] = GpuEngine()
 food_api.STATE["sem"] = asyncio.Semaphore(1)
 
-if os.environ.get("HUB_PRELOAD", "1") == "1":  # load shared models once at startup (ZeroGPU best practice)
+if (
+    os.environ.get("HUB_PRELOAD", "1") == "1"
+):  # load shared models once at startup (ZeroGPU best practice)
     from hub.models import p2_store, shared_llm
 
     shared_llm()
@@ -68,7 +76,15 @@ with gr.Blocks(title="AI Engineering Projects", theme=THEME, css=CSS) as demo:
 if __name__ == "__main__":
     allowed = [str(ROOT / "projects" / "p4" / "reports")]
     demo.queue(default_concurrency_limit=1).launch(
-        server_name="0.0.0.0", server_port=PORT, prevent_thread_lock=True, allowed_paths=allowed)
-    for route in [r for r in food_api.app.routes if getattr(r, "path", "") in ("/health", "/analyze")][::-1]:
+        server_name="0.0.0.0",
+        server_port=PORT,
+        prevent_thread_lock=True,
+        allowed_paths=allowed,
+    )
+    for route in [
+        r
+        for r in food_api.app.routes
+        if getattr(r, "path", "") in ("/health", "/analyze")
+    ][::-1]:
         demo.app.router.routes.insert(0, route)
     demo.block_thread()

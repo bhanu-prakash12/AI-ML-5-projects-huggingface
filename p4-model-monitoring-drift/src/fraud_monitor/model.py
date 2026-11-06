@@ -1,4 +1,5 @@
 """LightGBM fraud model, metrics and MLflow registry helpers (alias `champion`)."""
+
 from __future__ import annotations
 
 import json
@@ -42,9 +43,13 @@ def metrics(y: np.ndarray, score: np.ndarray, thr: float | None = None) -> dict[
     return {
         "pr_auc": float(average_precision_score(y, score)) if y.sum() else float("nan"),
         "roc_auc": float(roc_auc_score(y, score)) if 0 < y.sum() < len(y) else float("nan"),
-        "precision": float(p), "recall": float(r), "f1": float(f),
-        "accuracy": float((pred == y).mean()), "base_rate": float(y.mean()),
-        "n": int(len(y)), "n_fraud": int(y.sum()),
+        "precision": float(p),
+        "recall": float(r),
+        "f1": float(f),
+        "accuracy": float((pred == y).mean()),
+        "base_rate": float(y.mean()),
+        "n": int(len(y)),
+        "n_fraud": int(y.sum()),
     }
 
 

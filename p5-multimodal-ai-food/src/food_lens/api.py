@@ -1,4 +1,5 @@
 """FastAPI: /health, /analyze (multipart image <= 5 MB, resized <= 768 px, per-stage timings)."""
+
 from __future__ import annotations
 
 import asyncio
@@ -41,7 +42,11 @@ class Health(BaseModel):
     models_loaded: bool
     vlm: bool | None = None
 
-    model_config = {"json_schema_extra": {"examples": [{"status": "ok", "models_loaded": True, "vlm": True}]}}
+    model_config = {
+        "json_schema_extra": {
+            "examples": [{"status": "ok", "models_loaded": True, "vlm": True}]
+        }
+    }
 
 
 @asynccontextmanager
@@ -53,17 +58,31 @@ async def lifespan(app: FastAPI):
     STATE.clear()
 
 
-app = FastAPI(title="Food Lens", description=DESCRIPTION, version="1.0", lifespan=lifespan)
+app = FastAPI(
+    title="Food Lens", description=DESCRIPTION, version="1.0", lifespan=lifespan
+)
 
 
-@app.get("/health", response_model=Health, summary="Liveness + whether the models are loaded")
+@app.get(
+    "/health", response_model=Health, summary="Liveness + whether the models are loaded"
+)
 def health():
-    return {"status": "ok", "models_loaded": "engine" in STATE, "vlm": STATE["engine"].use_vlm if STATE else None}
+    return {
+        "status": "ok",
+        "models_loaded": "engine" in STATE,
+        "vlm": STATE["engine"].use_vlm if STATE else None,
+    }
 
 
-@app.post("/analyze", response_model=AnalyzeResponse, response_model_exclude_none=False,
-          summary="Analyze one food photo (dish, nutrition, recipes, timings)")
-async def analyze(file: UploadFile = File(..., description="JPEG/PNG food photo, at most 5 MB")):
+@app.post(
+    "/analyze",
+    response_model=AnalyzeResponse,
+    response_model_exclude_none=False,
+    summary="Analyze one food photo (dish, nutrition, recipes, timings)",
+)
+async def analyze(
+    file: UploadFile = File(..., description="JPEG/PNG food photo, at most 5 MB"),
+):
     limit = CFG["api"]["max_upload_bytes"]
     data = await file.read(limit + 1)
     if len(data) > limit:

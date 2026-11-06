@@ -1,4 +1,5 @@
 """Pydantic output schema + JSON extraction for the VLM."""
+
 from __future__ import annotations
 
 import json
@@ -15,7 +16,9 @@ class Recipe(BaseModel):
 class Portion(BaseModel):
     description: str
     approx_grams: int | None = Field(default=None, ge=0, le=3000)
-    is_estimate: bool = True  # always flagged: portion estimates from a photo are unreliable
+    is_estimate: bool = (
+        True  # always flagged: portion estimates from a photo are unreliable
+    )
 
     @field_validator("approx_grams", mode="before")
     @classmethod
@@ -36,8 +39,13 @@ class VlmResult(BaseModel):
     @model_validator(mode="after")
     def _no_nutrient_claims(self):
         # Nutrition numbers must come from the USDA CSV, never from the VLM.
-        if re.search(r"kcal|calorie|protein", (self.why + " " + self.portion_estimate.description).lower()):
-            raise ValueError("why/portion_estimate must not mention calories or nutrients")
+        if re.search(
+            r"kcal|calorie|protein",
+            (self.why + " " + self.portion_estimate.description).lower(),
+        ):
+            raise ValueError(
+                "why/portion_estimate must not mention calories or nutrients"
+            )
         return self
 
 
@@ -91,13 +99,30 @@ class Timings(BaseModel):
 
 
 EXAMPLE_RESPONSE = {
-    "top3": [{"label": "pizza", "name": "Pizza", "prob": 0.91}, {"label": "lasagna", "name": "Lasagna", "prob": 0.04},
-             {"label": "focaccia", "name": "Focaccia", "prob": 0.01}],
-    "vlm": None, "vlm_error": None, "vlm_attempts": None,
+    "top3": [
+        {"label": "pizza", "name": "Pizza", "prob": 0.91},
+        {"label": "lasagna", "name": "Lasagna", "prob": 0.04},
+        {"label": "focaccia", "name": "Focaccia", "prob": 0.01},
+    ],
+    "vlm": None,
+    "vlm_error": None,
+    "vlm_attempts": None,
     "disclaimer": "Estimates only. Not medical or dietary advice.",
-    "dish": "pizza", "dish_name": "Pizza",
-    "nutrition": {"class": "pizza", "fdc_id": "0", "matched_description": "(from USDA CSV)", "source_url": None,
-                  "per_100g": {"kcal": None, "protein_g": None, "fat_g": None, "carbs_g": None, "fiber_g": None}},
+    "dish": "pizza",
+    "dish_name": "Pizza",
+    "nutrition": {
+        "class": "pizza",
+        "fdc_id": "0",
+        "matched_description": "(from USDA CSV)",
+        "source_url": None,
+        "per_100g": {
+            "kcal": None,
+            "protein_g": None,
+            "fat_g": None,
+            "carbs_g": None,
+            "fiber_g": None,
+        },
+    },
     "timings_ms": {"decode_resize": 0, "clip": 0, "vlm": 0, "total": 0},
 }
 

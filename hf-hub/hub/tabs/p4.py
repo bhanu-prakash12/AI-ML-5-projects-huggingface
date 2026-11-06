@@ -1,4 +1,5 @@
 """p4 Fraud model monitoring: replay of the recorded run (scenario B). Simulate/Retrain need ~1 GB of data: not shipped."""
+
 from __future__ import annotations
 
 import json
@@ -19,10 +20,12 @@ simulator and Evidently monitor). Pick a window to open its full Evidently repor
 **How to read the plot.** Top: share of features that drifted per day vs the alert threshold. Bottom: PR-AUC per day vs
 the baseline (labels arrive a day late). Red bands = alert windows."""
 
-TRADEOFFS = ("- **Pros:** drift share needs no labels, so it alerts the same day; PR-AUC is robust to the 0.2% fraud rate; "
-             "the promotion gate stops noisy retrains.\n- **Cons:** labels arrive late; about 10 frauds a day make PR-AUC "
-             "noisy; synthetic scenarios are easier than real drift.\n- **At scale:** metrics store (Prometheus/Grafana), "
-             "scheduled monitor, shadow scoring, approval before promotion.")
+TRADEOFFS = (
+    "- **Pros:** drift share needs no labels, so it alerts the same day; PR-AUC is robust to the 0.2% fraud rate; "
+    "the promotion gate stops noisy retrains.\n- **Cons:** labels arrive late; about 10 frauds a day make PR-AUC "
+    "noisy; synthetic scenarios are easier than real drift.\n- **At scale:** metrics store (Prometheus/Grafana), "
+    "scheduled monitor, shadow scoring, approval before promotion."
+)
 
 
 def _run_dir():
@@ -38,9 +41,15 @@ def _links(df: pd.DataFrame) -> str:
     out = []
     for w, rep, a in zip(df.window, df.report, df.alert):
         if (_run_dir() / rep).exists():
-            out.append(f'<a href="/gradio_api/file={(_run_dir() / rep).as_posix()}" target="_blank">'
-                       f'window {w}{" (ALERT)" if a else ""}</a>')
-    return ("Evidently reports (open in a new tab): " + " &middot; ".join(out)) if out else ""
+            out.append(
+                f'<a href="/gradio_api/file={(_run_dir() / rep).as_posix()}" target="_blank">'
+                f"window {w}{' (ALERT)' if a else ''}</a>"
+            )
+    return (
+        ("Evidently reports (open in a new tab): " + " &middot; ".join(out))
+        if out
+        else ""
+    )
 
 
 def _retrain() -> str:
@@ -55,8 +64,13 @@ def _retrain() -> str:
 def render() -> None:
     from fraud_monitor import dashboard
 
-    header("p4", "Fraud model monitoring", "Drift detection with Evidently + PSI, alert rule, champion/challenger retrain.",
-           "p4-model-monitoring-drift", kind="Replay of a real run")
+    header(
+        "p4",
+        "Fraud model monitoring",
+        "Drift detection with Evidently + PSI, alert rule, champion/challenger retrain.",
+        "p4-model-monitoring-drift",
+        kind="Replay of a real run",
+    )
     gr.Markdown(HOWTO)
     df = _status()
     if df.empty:

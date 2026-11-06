@@ -1,5 +1,10 @@
 from study_assistant.ingest import (
-    Chunk, chunk_exam_pages, chunk_notes, ingest_corpus, parse_front_matter, split_questions,
+    Chunk,
+    chunk_exam_pages,
+    chunk_notes,
+    ingest_corpus,
+    parse_front_matter,
+    split_questions,
 )
 
 EXAM = """Machine Learning Final 2021
@@ -10,8 +15,9 @@ Question 2. (15 marks) Explain gradient descent.
 Question 3. (5 marks) What is regularization?
 """
 EXAM_NUM = "1. Define bias.\n2. Define variance.\n3) Define noise.\n"
-NOTE = "---\ntitle: Overfitting\nurl: https://en.wikipedia.org/wiki/Overfitting\nrevision: 42\n---\n# Overfitting\n\n" + (
-    "Overfitting is when a model fits noise. " * 60
+NOTE = (
+    "---\ntitle: Overfitting\nurl: https://en.wikipedia.org/wiki/Overfitting\nrevision: 42\n---\n# Overfitting\n\n"
+    + ("Overfitting is when a model fits noise. " * 60)
 )
 
 
@@ -30,7 +36,9 @@ def test_split_questions_no_markers():
 
 
 def test_exam_fallback_rate():
-    chunks, stats = chunk_exam_pages([EXAM, "plain prose page with no questions " * 5], "exam_2021.pdf", 2021)
+    chunks, stats = chunk_exam_pages(
+        [EXAM, "plain prose page with no questions " * 5], "exam_2021.pdf", 2021
+    )
     assert stats["question_chunks"] == 3 and stats["fallback_chunks"] >= 1
     assert chunks[0].metadata["doc_type"] == "exam" and chunks[0].metadata["page"] == 1
     assert chunks[0].metadata["question"] == "1"
@@ -47,7 +55,10 @@ def test_notes_front_matter_and_chunks():
 def test_ids_stable_and_content_sensitive():
     a, b = chunk_notes(NOTE, "o.md"), chunk_notes(NOTE, "o.md")
     assert [c.id for c in a] == [c.id for c in b]
-    assert Chunk("x", {"source": "s", "page": 1}).id != Chunk("y", {"source": "s", "page": 1}).id
+    assert (
+        Chunk("x", {"source": "s", "page": 1}).id
+        != Chunk("y", {"source": "s", "page": 1}).id
+    )
 
 
 def test_ingest_idempotent(tmp_path):

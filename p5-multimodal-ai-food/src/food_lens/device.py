@@ -1,4 +1,5 @@
 """get_device(): cuda > mps > cpu; dtype by device (fp16 on cuda/mps inference, fp32 on cpu)."""
+
 from __future__ import annotations
 
 

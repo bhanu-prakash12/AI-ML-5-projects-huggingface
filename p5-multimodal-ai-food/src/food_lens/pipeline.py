@@ -1,4 +1,5 @@
 """Orchestration: image -> CLIP top-3 -> nutrition rows (CSV) -> VLM JSON -> response with timings."""
+
 from __future__ import annotations
 
 import csv
@@ -29,8 +30,10 @@ def nutrition_view(row: dict | None) -> dict | None:
     if not row:
         return None
     return {
-        "class": row["class"], "fdc_id": row["fdc_id"] or None,
-        "matched_description": row["matched_description"] or None, "source_url": row["source_url"] or None,
+        "class": row["class"],
+        "fdc_id": row["fdc_id"] or None,
+        "matched_description": row["matched_description"] or None,
+        "source_url": row["source_url"] or None,
         "per_100g": {k: (float(row[k]) if row[k] != "" else None) for k in NUM},
     }
 
@@ -60,8 +63,14 @@ class Engine:
         top = self.clip.topk([im], self.cfg["api"]["top_k"])[0]
         t2 = time.perf_counter()
         rows = [self.nutrition[c] for c, _ in top if c in self.nutrition]
-        out = {"top3": [{"label": c, "name": pretty(c), "prob": round(p, 4)} for c, p in top],
-               "vlm": None, "vlm_error": None, "disclaimer": DISCLAIMER}
+        out = {
+            "top3": [
+                {"label": c, "name": pretty(c), "prob": round(p, 4)} for c, p in top
+            ],
+            "vlm": None,
+            "vlm_error": None,
+            "disclaimer": DISCLAIMER,
+        }
         dish = top[0][0]
         t3 = t2
         if self.use_vlm:
@@ -75,7 +84,9 @@ class Engine:
                 out["vlm"] = r
                 cand = {c for c, _ in top}
                 norm = r["dish"].strip().lower().replace(" ", "_")
-                dish = norm if norm in cand else dish  # VLM may only choose among CLIP candidates
+                dish = (
+                    norm if norm in cand else dish
+                )  # VLM may only choose among CLIP candidates
                 out["vlm_attempts"] = res["attempts"]
             else:
                 out["vlm_error"] = res["error"]
@@ -83,7 +94,9 @@ class Engine:
         out["dish_name"] = pretty(dish)
         out["nutrition"] = nutrition_view(self.nutrition.get(dish))
         out["timings_ms"] = {
-            "decode_resize": round((t1 - t0) * 1000), "clip": round((t2 - t1) * 1000),
-            "vlm": round((t3 - t2) * 1000), "total": round((time.perf_counter() - t0) * 1000),
+            "decode_resize": round((t1 - t0) * 1000),
+            "clip": round((t2 - t1) * 1000),
+            "vlm": round((t3 - t2) * 1000),
+            "total": round((time.perf_counter() - t0) * 1000),
         }
         return out

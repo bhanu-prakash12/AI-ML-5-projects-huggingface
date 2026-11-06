@@ -3,6 +3,7 @@
 Colour scheme: cyan = operation, green = ok, yellow = warn / trade-off, red = fail, dim = expected-output hints.
 Text stays ASCII-only so a plain Windows console (cp1252) never chokes on it.
 """
+
 from __future__ import annotations
 
 import logging
@@ -87,8 +88,11 @@ def kv_table(d: Mapping[str, Any], title: str | None = None) -> None:
     c.print(t)
 
 
-def table(rows: Sequence[Mapping[str, Any]], title: str | None = None,
-          highlight: Callable[[Mapping[str, Any]], str | None] | None = None) -> None:
+def table(
+    rows: Sequence[Mapping[str, Any]],
+    title: str | None = None,
+    highlight: Callable[[Mapping[str, Any]], str | None] | None = None,
+) -> None:
     """Print rows (list of dicts, same keys). `highlight(row)` may return a rich style, e.g. 'red'."""
     if not rows:
         _out("(no rows)", "dim")
@@ -115,5 +119,10 @@ def note(pros: str, cons: str, scale: str) -> None:
     if c is None:
         print(f"Pros: {pros}\nCons: {cons}\nAt scale: {scale}\n")
         return
-    c.print(Panel(f"[green]Pros:[/green] {pros}\n[yellow]Cons:[/yellow] {cons}\n[yellow]At scale:[/yellow] {scale}",
-                  title="Trade-offs", border_style="yellow"))
+    c.print(
+        Panel(
+            f"[green]Pros:[/green] {pros}\n[yellow]Cons:[/yellow] {cons}\n[yellow]At scale:[/yellow] {scale}",
+            title="Trade-offs",
+            border_style="yellow",
+        )
+    )

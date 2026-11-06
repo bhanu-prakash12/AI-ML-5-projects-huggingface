@@ -1,4 +1,5 @@
 """Build data/corpus/: Wikipedia notes (markdown + provenance) and, if approved, exam PDFs."""
+
 import logging
 import re
 import sys
@@ -30,9 +31,16 @@ def extract_to_markdown(text: str) -> str:
 
 def fetch_article(session: requests.Session, title: str) -> dict:
     params = {
-        "action": "query", "format": "json", "formatversion": 2, "redirects": 1,
-        "prop": "extracts|revisions|info", "explaintext": 1, "exsectionformat": "wiki",
-        "rvprop": "ids|timestamp", "inprop": "url", "titles": title,
+        "action": "query",
+        "format": "json",
+        "formatversion": 2,
+        "redirects": 1,
+        "prop": "extracts|revisions|info",
+        "explaintext": 1,
+        "exsectionformat": "wiki",
+        "rvprop": "ids|timestamp",
+        "inprop": "url",
+        "titles": title,
     }
     r = session.get(API, params=params, timeout=30)
     r.raise_for_status()
@@ -41,8 +49,11 @@ def fetch_article(session: requests.Session, title: str) -> dict:
         raise ValueError(f"missing page: {title}")
     rev = page["revisions"][0]
     return {
-        "title": page["title"], "url": page["fullurl"], "revid": rev["revid"],
-        "timestamp": rev["timestamp"], "text": extract_to_markdown(page["extract"]),
+        "title": page["title"],
+        "url": page["fullurl"],
+        "revid": rev["revid"],
+        "timestamp": rev["timestamp"],
+        "text": extract_to_markdown(page["extract"]),
     }
 
 
@@ -59,9 +70,15 @@ def main() -> None:
 
     from study_assistant import console
 
-    argparse.ArgumentParser(description="Build data/corpus/: 20 Wikipedia notes (markdown + provenance) and 2 MIT OCW exam PDFs.\nInputs: titles/URLs in configs/config.yaml. Outputs: data/corpus/*. Sample: python scripts/fetch_corpus.py",
-                            formatter_class=argparse.RawDescriptionHelpFormatter).parse_args()
-    console.banner("Fetch corpus", "Download notes and exams into data/corpus.", "20 notes + 2 exam PDFs (needs network)")
+    argparse.ArgumentParser(
+        description="Build data/corpus/: 20 Wikipedia notes (markdown + provenance) and 2 MIT OCW exam PDFs.\nInputs: titles/URLs in configs/config.yaml. Outputs: data/corpus/*. Sample: python scripts/fetch_corpus.py",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    ).parse_args()
+    console.banner(
+        "Fetch corpus",
+        "Download notes and exams into data/corpus.",
+        "20 notes + 2 exam PDFs (needs network)",
+    )
     console.setup_logging()
     cfg = load_config()
     notes_dir = resolve(cfg, "corpus") / "notes"
@@ -75,7 +92,9 @@ def main() -> None:
             continue
         art = fetch_article(s, title)
         write_note(out, art)
-        log.info("fetched %s rev %s (%d chars)", art["title"], art["revid"], len(art["text"]))
+        log.info(
+            "fetched %s rev %s (%d chars)", art["title"], art["revid"], len(art["text"])
+        )
         time.sleep(1.0)  # polite
     if not cfg["corpus"]["exam_urls"]:
         log.warning("no exam_urls approved; skipping exams (see DECISIONS.md)")

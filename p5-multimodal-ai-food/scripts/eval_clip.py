@@ -5,6 +5,7 @@ Inputs:  data/eval_sample/ (cached) or a streamed ethz/food101 validation sample
 Outputs: reports/clip_eval.json (top-1, top-5, seconds/image, device); data/labels.json.
 Example: python run.py eval --n 300
 """
+
 import argparse
 import json
 import sys
@@ -17,13 +18,26 @@ from food_lens import console
 from food_lens.clip_zs import ClipClassifier
 from food_lens.config import ROOT, load_config
 
-ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-ap.add_argument("--n", type=int, help="images to sample if the cache is empty (default: config eval.n_images)")
-ap.add_argument("--no-write", action="store_true", help="print results but keep reports/clip_eval.json unchanged")
+ap = argparse.ArgumentParser(
+    description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+)
+ap.add_argument(
+    "--n",
+    type=int,
+    help="images to sample if the cache is empty (default: config eval.n_images)",
+)
+ap.add_argument(
+    "--no-write",
+    action="store_true",
+    help="print results but keep reports/clip_eval.json unchanged",
+)
 args = ap.parse_args()
 console.setup_logging()
-console.banner("CLIP zero-shot evaluation", "Classifies a balanced Food-101 validation sample with 101 text prompts (no training).",
-               "top-1 / top-5 accuracy, seconds per image and the device used")
+console.banner(
+    "CLIP zero-shot evaluation",
+    "Classifies a balanced Food-101 validation sample with 101 text prompts (no training).",
+    "top-1 / top-5 accuracy, seconds per image and the device used",
+)
 cfg = load_config()
 N = args.n or cfg["eval"]["n_images"]
 sample_dir = ROOT / cfg["paths"]["data"] / "eval_sample"
@@ -37,7 +51,9 @@ def peak_rss_mb() -> float | None:
     except ImportError:
         return None  # Windows: not measured
     r = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
-    return round(r / (1e6 if sys.platform == "darwin" else 1e3), 0)  # macOS bytes, Linux KB
+    return round(
+        r / (1e6 if sys.platform == "darwin" else 1e3), 0
+    )  # macOS bytes, Linux KB
 
 
 def fetch() -> tuple[list[str], list[dict]]:
@@ -85,18 +101,26 @@ for i in range(0, len(items), 16):
 dt = time.time() - t0
 n = len(items)
 out = {
-    "n_images": n, "n_classes": len(names), "top1": round(top1 / n, 4), "top5": round(top5 / n, 4),
+    "n_images": n,
+    "n_classes": len(names),
+    "top1": round(top1 / n, 4),
+    "top5": round(top5 / n, 4),
     "templates": len(__import__("food_lens.clip_zs", fromlist=["TEMPLATES"]).TEMPLATES),
-    "device": clf.device, "seconds_per_image": round(dt / n, 4),
+    "device": clf.device,
+    "seconds_per_image": round(dt / n, 4),
     "peak_rss_mb": peak_rss_mb(),
     "note": "balanced sample from streamed ethz/food101 validation, shuffled seed 42",
 }
 console.step(3, 3, "results")
 console.kv_table(out, "CLIP zero-shot")
 if not args.no_write:
-    (ROOT / cfg["paths"]["reports"] / "clip_eval.json").write_text(json.dumps(out, indent=1))
+    (ROOT / cfg["paths"]["reports"] / "clip_eval.json").write_text(
+        json.dumps(out, indent=1)
+    )
     console.ok("wrote reports/clip_eval.json")
-console.note("No training and no labels beyond class names; top-5 shows the right dish is usually in the shortlist the VLM sees.",
-             "Food-101 has 101 fixed classes; mixed plates and other cuisines are forced into one of them.",
-             "Fine-tune or linear-probe CLIP on your own classes once zero-shot accuracy stops being enough.")
+console.note(
+    "No training and no labels beyond class names; top-5 shows the right dish is usually in the shortlist the VLM sees.",
+    "Food-101 has 101 fixed classes; mixed plates and other cuisines are forced into one of them.",
+    "Fine-tune or linear-probe CLIP on your own classes once zero-shot accuracy stops being enough.",
+)
 sys.exit(0)

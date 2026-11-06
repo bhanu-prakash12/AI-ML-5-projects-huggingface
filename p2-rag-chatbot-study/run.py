@@ -12,6 +12,7 @@ Usage: python run.py <command> [args]
   train / mlflow-ui   print "not used in this project"
 Sample: python run.py index && python run.py serve
 """
+
 from __future__ import annotations
 
 import os
@@ -34,8 +35,12 @@ def venv_python(root: Path = ROOT, os_name: str | None = None) -> str:
 
 def child_env(offline: bool = True) -> dict[str, str]:
     env = dict(os.environ)
-    env.update(PYTHONPATH=str(ROOT / "src"), ANONYMIZED_TELEMETRY="False", PYTORCH_ENABLE_MPS_FALLBACK="1",
-               TOKENIZERS_PARALLELISM="false")
+    env.update(
+        PYTHONPATH=str(ROOT / "src"),
+        ANONYMIZED_TELEMETRY="False",
+        PYTORCH_ENABLE_MPS_FALLBACK="1",
+        TOKENIZERS_PARALLELISM="false",
+    )
     if offline:
         env["HF_HUB_OFFLINE"] = "1"
     return env
@@ -77,7 +82,17 @@ def cmd_stop() -> int:
 def cmd_setup() -> int:
     if shutil.which("uv"):
         sh(["uv", "venv", "--python", "3.11", ".venv"])
-        sh(["uv", "pip", "install", "--python", venv_python(), "-r", "requirements-dev.txt"])
+        sh(
+            [
+                "uv",
+                "pip",
+                "install",
+                "--python",
+                venv_python(),
+                "-r",
+                "requirements-dev.txt",
+            ]
+        )
     else:  # Windows without uv: py -3.11 -m venv .venv (or any python 3.11)
         sh([sys.executable, "-m", "venv", ".venv"])
         sh([venv_python(), "-m", "pip", "install", "-r", "requirements-dev.txt"])
@@ -116,12 +131,25 @@ COMMANDS = {
     "index": lambda: script("ingest.py") or script("probe.py"),
     "train": not_used,
     "eval": lambda: script("run_eval.py"),
-    "serve": lambda: sh([venv_python(), "-m", "uvicorn", "study_assistant.api:app", "--port", str(_port()), "--workers", "1"]),
+    "serve": lambda: sh(
+        [
+            venv_python(),
+            "-m",
+            "uvicorn",
+            "study_assistant.api:app",
+            "--port",
+            str(_port()),
+            "--workers",
+            "1",
+        ]
+    ),
     "ui": lambda: script("ui.py"),
     "mlflow-ui": not_used,
     "demo": lambda: script("rag_demo.py"),
     "test": lambda: sh([venv_python(), "-m", "pytest", "-q"]),
-    "lint": lambda: sh([venv_python(), "-m", "ruff", "check", "src", "tests", "scripts", "run.py"]),
+    "lint": lambda: sh(
+        [venv_python(), "-m", "ruff", "check", "src", "tests", "scripts", "run.py"]
+    ),
     "smoke": lambda: script("smoke.py"),
     "verify": cmd_verify,
     "stop": cmd_stop,

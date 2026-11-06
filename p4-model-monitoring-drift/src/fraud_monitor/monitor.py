@@ -3,6 +3,7 @@
 Rule (spec): alert if drift share > 0.3 OR PR-AUC drop > 10% vs baseline.
 Guard (DECISIONS.md): the PR-AUC rule needs >= min_frauds_for_perf labelled frauds in the window.
 """
+
 from __future__ import annotations
 
 import json
@@ -77,8 +78,11 @@ def _evidently(ref: pd.DataFrame, cur: pd.DataFrame, feats: list[str], labelled:
     d = rep.as_dict()["metrics"][0]["result"]
     ts = TestSuite(tests=[TestShareOfDriftedColumns(columns=feats, lt=thr)])
     ts.run(reference_data=ref[cols], current_data=cur[cols], column_mapping=cm)
-    return {"drift_share": float(d["share_of_drifted_columns"]), "n_drifted": int(d["number_of_drifted_columns"]),
-            "tests_passed": bool(ts.as_dict()["summary"]["all_passed"])}
+    return {
+        "drift_share": float(d["share_of_drifted_columns"]),
+        "n_drifted": int(d["number_of_drifted_columns"]),
+        "tests_passed": bool(ts.as_dict()["summary"]["all_passed"]),
+    }
 
 
 def run(db: Path | None = None, out: Path | None = None) -> list[dict]:
@@ -99,25 +103,42 @@ def run(db: Path | None = None, out: Path | None = None) -> list[dict]:
     for day, cur in log_df[log_df.day > n_ref].groupby("day"):
         lab = cur[cur.label.notna()]
         labelled = len(lab) == len(cur) and len(cur) > 0
-        cur = cur.assign(prediction=cur["score"], target=cur["label"].astype("Int64").astype("float").fillna(-1).astype(int) if labelled else cur["label"])
+        cur = cur.assign(
+            prediction=cur["score"],
+            target=cur["label"].astype("Int64").astype("float").fillna(-1).astype(int) if labelled else cur["label"],
+        )
         cur_eval = cur if labelled else cur.drop(columns="target")
         html = out / "windows" / f"window_{int(day):02d}.html"
         ev = _evidently(ref, cur_eval, feats, labelled, html)
         pr = float(average_precision_score(lab.label, lab.score)) if labelled and lab.label.sum() > 0 else None
         nf = int(lab.label.sum()) if labelled else 0
         dec = decide(ev["drift_share"], pr, nf, baseline)
-        row = {"window": int(day), "n": len(cur), "n_fraud": nf, "labelled": labelled, **ev,
-               "psi_score": psi(ref["prediction"].to_numpy(), cur["score"].to_numpy()),
-               "mean_score": float(cur.score.mean()), "pr_auc": pr, "baseline_pr_auc": baseline,
-               "model_versions": sorted(cur.model_version.unique().tolist()),
-               "report": f"windows/{html.name}", **dec}
+        row = {
+            "window": int(day),
+            "n": len(cur),
+            "n_fraud": nf,
+            "labelled": labelled,
+            **ev,
+            "psi_score": psi(ref["prediction"].to_numpy(), cur["score"].to_numpy()),
+            "mean_score": float(cur.score.mean()),
+            "pr_auc": pr,
+            "baseline_pr_auc": baseline,
+            "model_versions": sorted(cur.model_version.unique().tolist()),
+            "report": f"windows/{html.name}",
+            **dec,
+        }
         status.append(row)
         if dec["alert"]:
-            alerts.append({"window": int(day), "reasons": dec["reasons"], "drift_share": ev["drift_share"], "pr_auc": pr,
-                           "labels_available_at_window": int(day) + cfg["label_lag_days"] if pr is not None else None})
+            alerts.append(
+                {
+                    "window": int(day),
+                    "reasons": dec["reasons"],
+                    "drift_share": ev["drift_share"],
+                    "pr_auc": pr,
+                    "labels_available_at_window": int(day) + cfg["label_lag_days"] if pr is not None else None,
+                }
+            )
             log.warning("ALERT window %s: %s", day, "; ".join(dec["reasons"]))
     (out / "status.json").write_text(json.dumps(status, indent=2))
     (out / "alerts.jsonl").write_text("".join(json.dumps(a) + "\n" for a in alerts))
     return status
-
-

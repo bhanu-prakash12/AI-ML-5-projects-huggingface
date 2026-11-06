@@ -1,4 +1,5 @@
 """Load -> clean -> dedupe -> filter by token length -> chat template -> deterministic splits."""
+
 from __future__ import annotations
 
 import json
@@ -34,8 +35,13 @@ def build_messages(system: str, q: str, a: str | None = None) -> list[dict[str, 
 
 
 def select_and_split(
-    df: pd.DataFrame, system: str, template: Callable[[list[dict[str, str]]], str],
-    count_tokens: Callable[[str], int], max_tokens: int, sizes: dict[str, int], seed: int = 42,
+    df: pd.DataFrame,
+    system: str,
+    template: Callable[[list[dict[str, str]]], str],
+    count_tokens: Callable[[str], int],
+    max_tokens: int,
+    sizes: dict[str, int],
+    seed: int = 42,
 ) -> dict[str, list[dict[str, Any]]]:
     """Shuffle deterministically, keep rows whose full chat text fits max_tokens, split disjointly."""
     need = sizes["train"] + sizes["val"] + sizes["test"]
@@ -44,7 +50,15 @@ def select_and_split(
         text = template(build_messages(system, r.question, r.answer))
         n = count_tokens(text)
         if n <= max_tokens:
-            rows.append({"question": r.question, "answer": r.answer, "qtype": r.qtype, "text": text, "n_tokens": n})
+            rows.append(
+                {
+                    "question": r.question,
+                    "answer": r.answer,
+                    "qtype": r.qtype,
+                    "text": text,
+                    "n_tokens": n,
+                }
+            )
             if len(rows) == need:
                 break
     if len(rows) < need:

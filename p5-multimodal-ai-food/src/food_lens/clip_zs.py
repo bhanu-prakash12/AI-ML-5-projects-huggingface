@@ -1,4 +1,5 @@
 """CLIP zero-shot classifier with prompt ensembling and a cached text-embedding matrix."""
+
 from __future__ import annotations
 
 import gc
@@ -24,7 +25,9 @@ def pretty(label: str) -> str:
 
 
 class ClipClassifier:
-    def __init__(self, labels: list[str], cfg: dict | None = None, device: str | None = None):
+    def __init__(
+        self, labels: list[str], cfg: dict | None = None, device: str | None = None
+    ):
         import open_clip
         import torch
         from huggingface_hub import snapshot_download
@@ -33,7 +36,9 @@ class ClipClassifier:
         m = self.cfg["models"]["clip"]
         self.device = device or get_device()
         self.labels = labels
-        path = snapshot_download(m["repo"], revision=m["revision"], allow_patterns=[m["weights"]])
+        path = snapshot_download(
+            m["repo"], revision=m["revision"], allow_patterns=[m["weights"]]
+        )
         self.model, _, self.preprocess = open_clip.create_model_and_transforms(
             m["arch"], pretrained=str(Path(path) / m["weights"])
         )
@@ -55,7 +60,9 @@ class ClipClassifier:
         embs = []
         with torch.inference_mode():
             for lab in self.labels:
-                toks = self.tokenizer([t.format(pretty(lab)) for t in TEMPLATES]).to(self.device)
+                toks = self.tokenizer([t.format(pretty(lab)) for t in TEMPLATES]).to(
+                    self.device
+                )
                 e = self.model.encode_text(toks).float()
                 e = e / e.norm(dim=-1, keepdim=True)
                 e = e.mean(0)  # prompt ensembling: average then renormalise
@@ -67,13 +74,17 @@ class ClipClassifier:
 
     def encode_images(self, images: list[Image.Image]) -> np.ndarray:
         torch = self._torch
-        x = torch.stack([self.preprocess(im.convert("RGB")) for im in images]).to(self.device)
+        x = torch.stack([self.preprocess(im.convert("RGB")) for im in images]).to(
+            self.device
+        )
         with torch.inference_mode():
             e = self.model.encode_image(x).float()
             e = e / e.norm(dim=-1, keepdim=True)
         return e.cpu().numpy()
 
-    def topk(self, images: list[Image.Image], k: int = 5) -> list[list[tuple[str, float]]]:
+    def topk(
+        self, images: list[Image.Image], k: int = 5
+    ) -> list[list[tuple[str, float]]]:
         logits = 100.0 * self.encode_images(images) @ self.text_emb.T
         logits -= logits.max(1, keepdims=True)
         probs = np.exp(logits)

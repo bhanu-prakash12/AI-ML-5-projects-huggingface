@@ -13,9 +13,9 @@ def test_psi_zero_for_same_and_large_for_shift():
 def test_decide_rules():
     ok = monitor.decide(0.1, 0.80, 20, 0.80)
     assert not ok["alert"]
-    assert monitor.decide(0.4, 0.80, 20, 0.80)["alert"]                       # drift share rule
-    d = monitor.decide(0.1, 0.60, 20, 0.80)                                   # 25% PR-AUC drop
+    assert monitor.decide(0.4, 0.80, 20, 0.80)["alert"]  # drift share rule
+    d = monitor.decide(0.1, 0.60, 20, 0.80)  # 25% PR-AUC drop
     assert d["alert"] and "pr_auc" in d["reasons"][0]
-    s = monitor.decide(0.1, 0.30, 4, 0.80)                                    # too few frauds -> guard
+    s = monitor.decide(0.1, 0.30, 4, 0.80)  # too few frauds -> guard
     assert not s["alert"] and "labelled frauds" in s["perf_skipped"]
     assert monitor.decide(0.1, None, 0, 0.8)["perf_skipped"] == "labels pending"

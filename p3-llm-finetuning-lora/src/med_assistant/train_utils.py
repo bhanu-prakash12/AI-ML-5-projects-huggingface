@@ -1,4 +1,5 @@
 """Small pure helpers for training reports."""
+
 from __future__ import annotations
 
 import statistics as st

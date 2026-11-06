@@ -1,4 +1,5 @@
 """Start the API in the background, wait for /health, run real requests, stop it (any OS)."""
+
 from __future__ import annotations
 
 import _boot  # noqa: F401  (adds src/ to sys.path)
@@ -35,8 +36,21 @@ def main(port: int = PORT) -> int:
     log = (run / "api.log").open("w")
     console.step(1, 3, f"starting uvicorn on :{port} (background)")
     proc = subprocess.Popen(
-        [sys.executable, "-m", "uvicorn", "dropout_risk.api:app", "--port", str(port),
-         "--log-level", "warning"], cwd=ROOT, env=env, stdout=log, stderr=log)
+        [
+            sys.executable,
+            "-m",
+            "uvicorn",
+            "dropout_risk.api:app",
+            "--port",
+            str(port),
+            "--log-level",
+            "warning",
+        ],
+        cwd=ROOT,
+        env=env,
+        stdout=log,
+        stderr=log,
+    )
     (run / "api.pid").write_text(str(proc.pid))
     try:
         console.step(2, 3, "waiting for /health")
@@ -66,6 +80,7 @@ if __name__ == "__main__":
     argparse.ArgumentParser(
         description="Smoke test: start the API, call it for real, stop it.",
         epilog="Needs a trained model (python run.py train). Output: console + "
-               "reports/latency.md. Sample: python scripts/smoke.py").parse_args()
+        "reports/latency.md. Sample: python scripts/smoke.py",
+    ).parse_args()
     console.setup_logging()
     raise SystemExit(main())

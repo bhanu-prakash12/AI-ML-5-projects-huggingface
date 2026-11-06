@@ -2,6 +2,7 @@
 
 cyan = operation, green = ok, yellow = warn/tradeoff, red = fail, dim = expected-output hints.
 """
+
 from __future__ import annotations
 
 import logging
@@ -26,13 +27,22 @@ def _p(msg: str = "", style: str = "") -> None:
 
 
 def setup_logging(level: int = logging.INFO) -> None:
-    logging.basicConfig(level=level, format="%(asctime)s %(levelname)s %(name)s: %(message)s", force=True)
+    logging.basicConfig(
+        level=level,
+        format="%(asctime)s %(levelname)s %(name)s: %(message)s",
+        force=True,
+    )
 
 
 def banner(title: str, what: str, expect: str) -> None:
     if _CON is not None:
-        _CON.print(Panel(f"{what}\n[dim]Expect: {expect}[/dim]", title=f"[bold cyan]{title}[/bold cyan]",
-                         border_style="cyan"))
+        _CON.print(
+            Panel(
+                f"{what}\n[dim]Expect: {expect}[/dim]",
+                title=f"[bold cyan]{title}[/bold cyan]",
+                border_style="cyan",
+            )
+        )
     else:
         print(f"== {title} ==\n{what}\nExpect: {expect}", flush=True)
 
@@ -57,7 +67,9 @@ def hint(msg: str) -> None:
     _p(msg, "dim")
 
 
-def table(rows: list[list[Any]], headers: list[str] | None = None, title: str | None = None) -> None:
+def table(
+    rows: list[list[Any]], headers: list[str] | None = None, title: str | None = None
+) -> None:
     if _CON is not None:
         t = Table(title=title, show_header=bool(headers))
         for h in headers or [""] * (len(rows[0]) if rows else 0):
@@ -81,6 +93,12 @@ def kv_table(d: dict[str, Any], title: str | None = None) -> None:
 def note(pros: str, cons: str, scale: str) -> None:
     body = f"Pros:     {pros}\nCons:     {cons}\nAt scale: {scale}"
     if _CON is not None:
-        _CON.print(Panel(body, title="[yellow]Pros / Cons / At scale[/yellow]", border_style="yellow"))
+        _CON.print(
+            Panel(
+                body,
+                title="[yellow]Pros / Cons / At scale[/yellow]",
+                border_style="yellow",
+            )
+        )
     else:
         print(body, flush=True)

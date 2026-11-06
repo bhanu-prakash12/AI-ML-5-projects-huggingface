@@ -11,7 +11,10 @@ def _calls():
     return [
         lambda: console.banner("T", "does a thing", "a result"),
         lambda: console.step(1, 2, "step one"),
-        lambda: console.ok("good"), lambda: console.warn("hmm"), lambda: console.fail("bad"), lambda: console.hint("tip"),
+        lambda: console.ok("good"),
+        lambda: console.warn("hmm"),
+        lambda: console.fail("bad"),
+        lambda: console.hint("tip"),
         lambda: console.kv_table({"a": 1}, title="kv"),
         lambda: console.table([{"x": 1, "y": "z"}], title="tbl", highlight=lambda r: "red"),
         lambda: console.note("p", "c", "s"),
@@ -33,8 +36,16 @@ def test_rich_path_and_no_color(monkeypatch, capsys):
 
 
 def test_window_line_alert_and_ok():
-    r = {"window": 6, "drift_share": 0.34, "psi_score": 0.1, "pr_auc": 0.4, "baseline_pr_auc": 0.8, "alert": True,
-         "reasons": ["drift_share 0.34 > 0.3"], "perf_skipped": None}
+    r = {
+        "window": 6,
+        "drift_share": 0.34,
+        "psi_score": 0.1,
+        "pr_auc": 0.4,
+        "baseline_pr_auc": 0.8,
+        "alert": True,
+        "reasons": ["drift_share 0.34 > 0.3"],
+        "perf_skipped": None,
+    }
     lvl, txt = narrate.window_line(r)
     assert lvl == "fail" and "ALERT" in txt and "-50%" in txt
     lvl, txt = narrate.window_line({**r, "alert": False, "pr_auc": None, "perf_skipped": "labels pending"})

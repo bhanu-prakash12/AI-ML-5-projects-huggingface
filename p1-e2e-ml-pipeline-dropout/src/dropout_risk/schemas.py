@@ -1,4 +1,5 @@
 """Pydantic request/response models (request schema derived from preprocess.json ranges)."""
+
 from __future__ import annotations
 
 from typing import Any, Literal
@@ -13,16 +14,32 @@ class Contribution(BaseModel):
 
 
 class Prediction(BaseModel):
-    model_config = ConfigDict(json_schema_extra={"examples": [{
-        "probability": 0.87, "risk_tier": "high",
-        "top_features": [{"feature": "curricular_units_2nd_sem_approved", "contribution": 1.1,
-                          "direction": "increases_risk"}],
-        "model_version": "dropout-risk-v2"}]})
+    model_config = ConfigDict(
+        json_schema_extra={
+            "examples": [
+                {
+                    "probability": 0.87,
+                    "risk_tier": "high",
+                    "top_features": [
+                        {
+                            "feature": "curricular_units_2nd_sem_approved",
+                            "contribution": 1.1,
+                            "direction": "increases_risk",
+                        }
+                    ],
+                    "model_version": "dropout-risk-v2",
+                }
+            ]
+        }
+    )
 
     probability: float = Field(ge=0, le=1, description="P(dropout)")
     risk_tier: Literal["low", "medium", "high"] = Field(
-        description="high: p >= tuned threshold; medium: p >= threshold/2; else low")
-    top_features: list[Contribution] = Field(description="Top 3 features by |contribution|")
+        description="high: p >= tuned threshold; medium: p >= threshold/2; else low"
+    )
+    top_features: list[Contribution] = Field(
+        description="Top 3 features by |contribution|"
+    )
     model_version: str
 
 
@@ -35,11 +52,17 @@ class Health(BaseModel):
     model_version: str
 
 
-def student_model(meta: dict[str, Any],
-                  example: dict[str, float] | None = None) -> type[BaseModel]:
+def student_model(
+    meta: dict[str, Any], example: dict[str, float] | None = None
+) -> type[BaseModel]:
     """Build the request model from the validated column ranges (422 on out-of-range)."""
     fields: dict[str, Any] = {
-        c: (float, Field(ge=lo, le=hi, description=f"{c.replace('_', ' ')} (valid {lo}..{hi})"))
+        c: (
+            float,
+            Field(
+                ge=lo, le=hi, description=f"{c.replace('_', ' ')} (valid {lo}..{hi})"
+            ),
+        )
         for c, (lo, hi) in meta["ranges"].items()
     }
     cfg = ConfigDict(json_schema_extra={"examples": [example]}) if example else None

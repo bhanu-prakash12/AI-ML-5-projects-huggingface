@@ -32,7 +32,9 @@ def test_venv_python_posix_layout_and_fallback(tmp_path):
 
 
 def test_kill_cmd_per_os():
-    assert run_mod.kill_cmd(42, "nt")[0] == "taskkill" and "/T" in run_mod.kill_cmd(42, "nt")
+    assert run_mod.kill_cmd(42, "nt")[0] == "taskkill" and "/T" in run_mod.kill_cmd(
+        42, "nt"
+    )
     assert run_mod.kill_cmd(42, "posix") == ["kill", "42"]
 
 
@@ -58,7 +60,12 @@ def test_console_plain_fallback(monkeypatch, capsys):
     console.table([["a", 1]], ["k", "v"])
     console.note("p", "c", "s")
     out = capsys.readouterr().out
-    assert "=== T ===" in out and "[1/2] go" in out and "OK   fine" in out and "At scale: s" in out
+    assert (
+        "=== T ===" in out
+        and "[1/2] go" in out
+        and "OK   fine" in out
+        and "At scale: s" in out
+    )
 
 
 def test_console_without_rich(monkeypatch, capsys):
@@ -77,7 +84,10 @@ def test_get_device_prefers_cuda_then_mps(monkeypatch):
     assert device.get_device() == "mps"
     monkeypatch.setattr(torch.backends.mps, "is_available", lambda: False)
     assert device.get_device() == "cpu"
-    assert device.inference_dtype("cpu") == torch.float32 and device.inference_dtype("cuda") == torch.float16
+    assert (
+        device.inference_dtype("cpu") == torch.float32
+        and device.inference_dtype("cuda") == torch.float16
+    )
 
 
 def test_empty_cache_is_safe_on_cpu():
@@ -92,7 +102,9 @@ def test_api_example_validates_and_openapi_has_it():
 
     spec_ = app.openapi()
     assert "AnalyzeResponse" in spec_["components"]["schemas"]
-    ref = spec_["paths"]["/analyze"]["post"]["responses"]["200"]["content"]["application/json"]["schema"]["$ref"]
+    ref = spec_["paths"]["/analyze"]["post"]["responses"]["200"]["content"][
+        "application/json"
+    ]["schema"]["$ref"]
     assert ref.endswith("AnalyzeResponse")
 
 
