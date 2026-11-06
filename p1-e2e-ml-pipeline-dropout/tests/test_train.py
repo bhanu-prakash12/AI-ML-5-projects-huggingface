@@ -33,8 +33,12 @@ def test_sensitive_excluded_from_features():
 
 def _frame(n=200, seed=42):
     rng = np.random.default_rng(seed)
-    df = pd.DataFrame({c: rng.integers(int(lo), int(min(hi, lo + 5)) + 1, n)
-                       for c, (lo, hi) in RANGES.items()})
+    df = pd.DataFrame(
+        {
+            c: rng.integers(int(lo), int(min(hi, lo + 5)) + 1, n)
+            for c, (lo, hi) in RANGES.items()
+        }
+    )
     df["dropout"] = (df["curricular_units_2nd_sem_approved"] < 2).astype(int)
     return df
 
@@ -42,10 +46,15 @@ def _frame(n=200, seed=42):
 def test_fit_and_fairness_slices():
     df = _frame()
     X, y = features.xy(df)
-    m = fit("lightgbm", dict(num_leaves=7, learning_rate=0.1, n_estimators=20), X, y, 1, 42)
+    m = fit(
+        "lightgbm", dict(num_leaves=7, learning_rate=0.1, n_estimators=20), X, y, 1, 42
+    )
     p = m.predict_proba(X)[:, 1]
     assert ((p >= 0) & (p <= 1)).all()
-    assert m.booster_.predict(X.head(2), pred_contrib=True).shape == (2, len(features.FEATURES) + 1)
+    assert m.booster_.predict(X.head(2), pred_contrib=True).shape == (
+        2,
+        len(features.FEATURES) + 1,
+    )
     df["gender"] = np.arange(len(df)) % 2
     df["age_at_enrollment"] = 18 + np.arange(len(df)) % 20
     sl = fairness.slice_metrics(df, p, 0.5)

@@ -1,4 +1,5 @@
 """Narration helpers on `rich` with a plain-print fallback. Respects NO_COLOR."""
+
 from __future__ import annotations
 
 import logging
@@ -43,7 +44,13 @@ def setup_logging(level: int = logging.INFO) -> None:
 def banner(title: str, what: str, expect: str) -> None:
     c = _con() if _RICH else None
     if c is not None:
-        c.print(Panel(f"{what}\n[dim]Expect: {expect}[/dim]", title=f"[bold cyan]{title}[/bold cyan]", border_style="cyan"))
+        c.print(
+            Panel(
+                f"{what}\n[dim]Expect: {expect}[/dim]",
+                title=f"[bold cyan]{title}[/bold cyan]",
+                border_style="cyan",
+            )
+        )
     else:
         print(f"=== {title} ===\n{what}\nExpect: {expect}", flush=True)
 
@@ -68,7 +75,9 @@ def hint(msg: str) -> None:
     _out(f"[dim]{msg}[/dim]", msg)
 
 
-def table(rows: list[list[Any]], headers: list[str] | None = None, title: str | None = None) -> None:
+def table(
+    rows: list[list[Any]], headers: list[str] | None = None, title: str | None = None
+) -> None:
     rows = [[str(x) for x in r] for r in rows]
     c = _con() if _RICH else None
     if c is not None:
@@ -94,7 +103,12 @@ def kv_table(d: dict[str, Any], title: str | None = None) -> None:
 def note(pros: str, cons: str, scale: str) -> None:
     c = _con() if _RICH else None
     if c is not None:
-        c.print(Panel(f"[green]Pros:[/green] {pros}\n[yellow]Cons:[/yellow] {cons}\n[yellow]At scale:[/yellow] {scale}",
-                      title="Trade-offs", border_style="yellow"))
+        c.print(
+            Panel(
+                f"[green]Pros:[/green] {pros}\n[yellow]Cons:[/yellow] {cons}\n[yellow]At scale:[/yellow] {scale}",
+                title="Trade-offs",
+                border_style="yellow",
+            )
+        )
     else:
         print(f"Pros: {pros}\nCons: {cons}\nAt scale: {scale}", flush=True)

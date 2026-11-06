@@ -1,4 +1,5 @@
 """Example /predict payloads derived from the model's feature list and real reference rows (no invented values)."""
+
 from __future__ import annotations
 
 import json

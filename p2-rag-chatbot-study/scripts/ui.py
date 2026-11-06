@@ -3,6 +3,7 @@
 Inputs: a question + document filter. Outputs: streamed answer with sources. Needs the API running (`python run.py serve`).
 Sample: python scripts/ui.py   (port from config ui.port or P2_UI_PORT)
 """
+
 import json
 import os
 import sys
@@ -31,8 +32,14 @@ def sse_events(resp):
 def fmt_sources(src: list[dict]) -> str:
     if not src:
         return ""
-    return "\n\n<details><summary>Sources</summary>\n\n" + "\n".join(
-        f"- `{s['label']}` (sim {s['score']}): {s['snippet'][:120].strip()}..." for s in src) + "\n\n</details>"
+    return (
+        "\n\n<details><summary>Sources</summary>\n\n"
+        + "\n".join(
+            f"- `{s['label']}` (sim {s['score']}): {s['snippet'][:120].strip()}..."
+            for s in src
+        )
+        + "\n\n</details>"
+    )
 
 
 def chat(message, history, doc_type):
@@ -43,7 +50,11 @@ def chat(message, history, doc_type):
         elif last_user is not None:
             pairs.append((last_user, h["content"]))
             last_user = None
-    body = {"question": message, "history": pairs[-3:], "doc_type": None if doc_type == "all" else doc_type}
+    body = {
+        "question": message,
+        "history": pairs[-3:],
+        "doc_type": None if doc_type == "all" else doc_type,
+    }
     text, src = "", []
     try:
         with httpx.stream("POST", f"{API}/ask", json=body, timeout=300) as r:
@@ -75,18 +86,31 @@ TRADEOFFS = """- **Pros:** grounded answers with sources, refuses instead of gue
 
 EXAMPLES = [
     ["What is the bias-variance tradeoff?", "all"],  # in-corpus -> answer + sources
-    ["How does gradient descent update model parameters?", "notes"],  # in-corpus -> answer + sources
+    [
+        "How does gradient descent update model parameters?",
+        "notes",
+    ],  # in-corpus -> answer + sources
     ["Who won the 1998 football world cup?", "all"],  # out-of-corpus -> refusal
 ]
 
 with gr.Blocks(title="Study Assistant") as demo:
     gr.Markdown(HOWTO)
-    gr.ChatInterface(chat, type="messages", examples=EXAMPLES, cache_examples=False,
-                     additional_inputs=[gr.Dropdown(["all", "notes", "exam"], value="all", label="Document type")])
+    gr.ChatInterface(
+        chat,
+        type="messages",
+        examples=EXAMPLES,
+        cache_examples=False,
+        additional_inputs=[
+            gr.Dropdown(["all", "notes", "exam"], value="all", label="Document type")
+        ],
+    )
     with gr.Accordion("Pros / cons / at scale", open=False):
         gr.Markdown(TRADEOFFS)
 
 if __name__ == "__main__":
-    console.banner("Study Assistant UI", f"Gradio chat talking to the API at {API}.",
-                   f"open http://127.0.0.1:{ui_port(CFG)} (API must be running: python run.py serve)")
+    console.banner(
+        "Study Assistant UI",
+        f"Gradio chat talking to the API at {API}.",
+        f"open http://127.0.0.1:{ui_port(CFG)} (API must be running: python run.py serve)",
+    )
     demo.launch(server_name="127.0.0.1", server_port=ui_port(CFG))

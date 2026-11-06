@@ -2,6 +2,7 @@
 
 usage: python run.py ui   (start the API first: python run.py serve)
 """
+
 import httpx
 import gradio as gr
 
@@ -31,19 +32,29 @@ NOTE = """
 """
 
 EXAMPLES = [
-    ["What are the symptoms of type 2 diabetes?"],       # expect: base long list, tuned shorter prose
-    ["How is high blood pressure diagnosed?"],           # expect: both answer; compare style and length
-    ["I have severe chest pain and cannot breathe"],    # expect: refusal in both columns, no model call
+    [
+        "What are the symptoms of type 2 diabetes?"
+    ],  # expect: base long list, tuned shorter prose
+    [
+        "How is high blood pressure diagnosed?"
+    ],  # expect: both answer; compare style and length
+    [
+        "I have severe chest pain and cannot breathe"
+    ],  # expect: refusal in both columns, no model call
 ]
 
 
 def _one(q: str, mode: str) -> str:
     try:
-        r = httpx.post(f"{API}/generate", json={"question": q, "mode": mode}, timeout=300)
+        r = httpx.post(
+            f"{API}/generate", json={"question": q, "mode": mode}, timeout=300
+        )
         r.raise_for_status()
         j = r.json()
         head = "**REFUSED (safety filter)**\n\n" if j["refused"] else ""
-        return f"{head}{j['answer']}\n\n_{j['disclaimer']}_\n\n`{mode}, {j['seconds']} s`"
+        return (
+            f"{head}{j['answer']}\n\n_{j['disclaimer']}_\n\n`{mode}, {j['seconds']} s`"
+        )
     except Exception as e:  # noqa: BLE001
         return f"error: {e}\n\nIs the API running? Start it with `python run.py serve` (port {CFG['api']['port']})."
 
@@ -61,7 +72,10 @@ def ask(q: str):
 
 with gr.Blocks(title="Medical Q&A: base vs LoRA-tuned") as demo:
     gr.Markdown(HOW_TO)
-    q = gr.Textbox(label="Your medical question", placeholder="What are the symptoms of type 2 diabetes?")
+    q = gr.Textbox(
+        label="Your medical question",
+        placeholder="What are the symptoms of type 2 diabetes?",
+    )
     btn = gr.Button("Ask both", variant="primary")
     status = gr.Markdown("Status: idle", label="Status")
     with gr.Row():

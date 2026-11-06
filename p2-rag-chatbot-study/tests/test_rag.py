@@ -8,7 +8,9 @@ from study_assistant.config import load_config
 
 
 def doc(text, src="a.md", page=1):
-    return Document(page_content=text, metadata={"source": src, "page": page, "doc_type": "notes"})
+    return Document(
+        page_content=text, metadata={"source": src, "page": page, "doc_type": "notes"}
+    )
 
 
 def test_condense_skipped_without_history():
@@ -19,8 +21,11 @@ def test_condense_skipped_without_history():
 
 
 def test_condense_uses_first_line():
-    out = rag.condense("and its cost?", [("What is SVM?", "A classifier.")],
-                       lambda m, max_new_tokens: "What is the cost of an SVM?\nextra")
+    out = rag.condense(
+        "and its cost?",
+        [("What is SVM?", "A classifier.")],
+        lambda m, max_new_tokens: "What is the cost of an SVM?\nextra",
+    )
     assert out == "What is the cost of an SVM?"
 
 
@@ -44,21 +49,34 @@ def test_build_messages_truncates_to_budget():
 def test_ask_stream_gate_refuses_without_llm(monkeypatch):
     cfg = load_config()
     cfg["retrieval"] = {**cfg["retrieval"], "score_threshold": 0.65}
-    monkeypatch.setattr(rag, "retrieve", lambda *a, **k: rag.Retrieved([doc("x")], [0.3]))
+    monkeypatch.setattr(
+        rag, "retrieve", lambda *a, **k: rag.Retrieved([doc("x")], [0.3])
+    )
     fake = types.SimpleNamespace(generate=lambda *a, **k: "", count_tokens=len)
     monkeypatch.setitem(sys.modules, "study_assistant.llm", fake)
     monkeypatch.setattr("study_assistant.llm", fake, raising=False)
     r = rag.ask(None, "who won the world cup?", cfg=cfg)
-    assert r["refused"] and r["gate"] and r["answer"] == rag.REFUSAL and r["sources"] == []
+    assert (
+        r["refused"] and r["gate"] and r["answer"] == rag.REFUSAL and r["sources"] == []
+    )
 
 
 def test_ask_stream_appends_sources_when_model_does_not_cite(monkeypatch):
     cfg = load_config()
-    monkeypatch.setattr(rag, "retrieve", lambda *a, **k: rag.Retrieved([doc("svm text", "svm.md")], [0.9]))
-    fake = types.SimpleNamespace(generate=lambda *a, **k: "", count_tokens=len,
-                                 stream=lambda *a, **k: iter(["It maximizes ", "the margin."]))
+    monkeypatch.setattr(
+        rag,
+        "retrieve",
+        lambda *a, **k: rag.Retrieved([doc("svm text", "svm.md")], [0.9]),
+    )
+    fake = types.SimpleNamespace(
+        generate=lambda *a, **k: "",
+        count_tokens=len,
+        stream=lambda *a, **k: iter(["It maximizes ", "the margin."]),
+    )
     monkeypatch.setitem(sys.modules, "study_assistant.llm", fake)
     monkeypatch.setattr("study_assistant.llm", fake, raising=False)
     r = rag.ask(None, "What does SVM maximize?", cfg=cfg)
-    assert not r["refused"] and r["citations"] == ["svm.md:1"] and r["model_cited"] == []
+    assert (
+        not r["refused"] and r["citations"] == ["svm.md:1"] and r["model_cited"] == []
+    )
     assert r["answer"].endswith("[svm.md:1]")

@@ -1,4 +1,5 @@
 """Gradio-free logic for the demo UI (kept importable and testable without gradio)."""
+
 from __future__ import annotations
 
 from typing import Any
@@ -20,8 +21,10 @@ def is_binary(col: str) -> bool:
 
 def example_rows() -> list[list[Any]]:
     """Rows for gr.Examples: UI field values for the low / medium / high presets."""
-    return [[bool(SAMPLES[k][c]) if is_binary(c) else SAMPLES[k][c] for c in UI_FIELDS]
-            for k in ("low", "medium", "high")]
+    return [
+        [bool(SAMPLES[k][c]) if is_binary(c) else SAMPLES[k][c] for c in UI_FIELDS]
+        for k in ("low", "medium", "high")
+    ]
 
 
 def build_row(values: list[Any], columns: list[str]) -> dict[str, float]:
@@ -39,9 +42,11 @@ def score(values: list[Any], predictor: Predictor) -> dict[str, Any]:
 
 
 def summary_md(pred: dict[str, Any], threshold: float) -> str:
-    return (f"### {pred['risk_tier'].upper()} risk  -  P(dropout) = {pred['probability']:.1%}\n"
-            f"{TIER_TEXT[pred['risk_tier']]}\n\n"
-            f"_Tuned threshold: {threshold:.3f}; model `{pred['model_version']}`._")
+    return (
+        f"### {pred['risk_tier'].upper()} risk  -  P(dropout) = {pred['probability']:.1%}\n"
+        f"{TIER_TEXT[pred['risk_tier']]}\n\n"
+        f"_Tuned threshold: {threshold:.3f}; model `{pred['model_version']}`._"
+    )
 
 
 def contrib_chart(pred: dict[str, Any]):
@@ -53,9 +58,11 @@ def contrib_chart(pred: dict[str, Any]):
 
     feats = pred["top_features"][::-1]
     fig, ax = plt.subplots(figsize=(6, 2.6))
-    ax.barh([f["feature"].replace("curricular_units_", "cu_") for f in feats],
-            [f["contribution"] for f in feats],
-            color=["#C62828" if f["contribution"] > 0 else "#2E7D32" for f in feats])
+    ax.barh(
+        [f["feature"].replace("curricular_units_", "cu_") for f in feats],
+        [f["contribution"] for f in feats],
+        color=["#C62828" if f["contribution"] > 0 else "#2E7D32" for f in feats],
+    )
     ax.axvline(0, color="#455A64", lw=0.8)
     ax.set_xlabel("SHAP contribution (log-odds); red raises risk, green lowers it")
     fig.tight_layout()

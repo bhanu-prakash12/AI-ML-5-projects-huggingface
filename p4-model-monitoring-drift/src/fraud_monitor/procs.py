@@ -1,4 +1,5 @@
 """Cross-platform process helpers (stdlib only): venv python, background API, PID files, health wait."""
+
 from __future__ import annotations
 
 import json
@@ -59,7 +60,9 @@ def stop_pid_files(run_dir: Path) -> list[int]:
     return killed
 
 
-def start_background(cmd: list[str], env: dict[str, str], cwd: Path, log_path: Path, pid_path: Path) -> subprocess.Popen:
+def start_background(
+    cmd: list[str], env: dict[str, str], cwd: Path, log_path: Path, pid_path: Path
+) -> subprocess.Popen:
     log_path.parent.mkdir(parents=True, exist_ok=True)
     log = open(log_path, "wb")
     kw: dict[str, Any] = {}

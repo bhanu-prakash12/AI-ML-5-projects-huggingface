@@ -1,4 +1,5 @@
 """Make every project's `src/` package importable from one process (package names are unique)."""
+
 import sys
 from pathlib import Path
 

@@ -1,4 +1,5 @@
 """SQLite prediction log. One row per request; labels arrive later via /feedback."""
+
 from __future__ import annotations
 
 import json

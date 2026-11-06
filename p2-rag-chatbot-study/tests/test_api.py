@@ -46,7 +46,10 @@ def test_health_and_ask(monkeypatch):
 def test_ask_validation(monkeypatch):
     with client(monkeypatch) as c:
         assert c.post("/ask", json={"question": ""}).status_code == 422
-        assert c.post("/ask", json={"question": "x", "doc_type": "bogus"}).status_code == 422
+        assert (
+            c.post("/ask", json={"question": "x", "doc_type": "bogus"}).status_code
+            == 422
+        )
 
 
 def test_ingest_lock_and_result(monkeypatch):

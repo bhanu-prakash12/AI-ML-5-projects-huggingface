@@ -1,4 +1,5 @@
 """Gradio demo: student features -> dropout probability, tier, top-3 SHAP chart (port 7861)."""
+
 from __future__ import annotations
 
 import _boot  # noqa: F401  (adds src/ to sys.path)
@@ -10,7 +11,13 @@ from dropout_risk import console
 from dropout_risk.config import load_config, project_path
 from dropout_risk.data import RANGES
 from dropout_risk.predict import Predictor
-from dropout_risk.ui_core import contrib_chart, example_rows, is_binary, score, summary_md
+from dropout_risk.ui_core import (
+    contrib_chart,
+    example_rows,
+    is_binary,
+    score,
+    summary_md,
+)
 from dropout_risk.samples import UI_FIELDS
 
 HOW_TO = """
@@ -46,14 +53,18 @@ def build(predictor: Predictor) -> gr.Blocks:
                 if is_binary(c):
                     inputs.append(gr.Checkbox(label=label))
                 else:
-                    inputs.append(gr.Number(label=f"{label} ({lo}..{hi})", minimum=lo, maximum=hi))
+                    inputs.append(
+                        gr.Number(label=f"{label} ({lo}..{hi})", minimum=lo, maximum=hi)
+                    )
         btn = gr.Button("Predict", variant="primary")
         status = gr.Markdown("Ready.")
         with gr.Row():
             out_md = gr.Markdown()
             out_plot = gr.Plot(label="Top-3 SHAP contributions")
         btn.click(run, inputs, [out_md, out_plot, status])
-        gr.Examples(example_rows(), inputs, label="Examples: low / medium / high risk student")
+        gr.Examples(
+            example_rows(), inputs, label="Examples: low / medium / high risk student"
+        )
         with gr.Accordion("Pros / cons / at scale", open=False):
             gr.Markdown(PROS_CONS)
     return demo
@@ -64,14 +75,20 @@ def main() -> None:
     ap = argparse.ArgumentParser(
         description="Launch the Gradio dropout-risk form.",
         epilog="Needs a trained model (python run.py train). Open http://127.0.0.1:7861. "
-               "Sample: python scripts/ui.py")
+        "Sample: python scripts/ui.py",
+    )
     ap.add_argument("--port", type=int, default=port)
     args = ap.parse_args()
     console.setup_logging()
-    console.banner("Gradio UI", "Student form -> probability, tier, SHAP chart.",
-                   f"page at http://127.0.0.1:{args.port} (Ctrl+C to stop).")
+    console.banner(
+        "Gradio UI",
+        "Student form -> probability, tier, SHAP chart.",
+        f"page at http://127.0.0.1:{args.port} (Ctrl+C to stop).",
+    )
     predictor = Predictor.load(project_path("artifacts") / "model")
-    build(predictor).launch(server_name="127.0.0.1", server_port=args.port, show_error=True)
+    build(predictor).launch(
+        server_name="127.0.0.1", server_port=args.port, show_error=True
+    )
 
 
 if __name__ == "__main__":

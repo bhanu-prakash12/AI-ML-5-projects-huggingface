@@ -1,4 +1,5 @@
 """load(), generate(), stream() with transformers (Qwen), in-process, pinned revision."""
+
 from __future__ import annotations
 
 import logging
@@ -26,7 +27,9 @@ def load(cfg: dict[str, Any] | None = None, fallback: bool = False):
             dev = get_device()
             dtype = getattr(torch, dtype_name(dev))
             tok = AutoTokenizer.from_pretrained(m["name"], revision=m["revision"])
-            model = AutoModelForCausalLM.from_pretrained(m["name"], revision=m["revision"], torch_dtype=dtype)
+            model = AutoModelForCausalLM.from_pretrained(
+                m["name"], revision=m["revision"], torch_dtype=dtype
+            )
             model.to(dev).eval()
             _STATE.update(tok=tok, model=model, device=dev)
             log.info("llm loaded: %s on %s", m["name"], dev)
@@ -45,7 +48,10 @@ def _inputs(messages: list[dict[str, str]]):
 
 
 def _gen_kwargs(tok, max_new_tokens: int, temperature: float) -> dict[str, Any]:
-    kw: dict[str, Any] = {"max_new_tokens": max_new_tokens, "pad_token_id": tok.eos_token_id}
+    kw: dict[str, Any] = {
+        "max_new_tokens": max_new_tokens,
+        "pad_token_id": tok.eos_token_id,
+    }
     if temperature > 0:
         kw.update(do_sample=True, temperature=temperature)
     else:
@@ -53,16 +59,22 @@ def _gen_kwargs(tok, max_new_tokens: int, temperature: float) -> dict[str, Any]:
     return kw
 
 
-def generate(messages: list[dict[str, str]], max_new_tokens: int = 400, temperature: float = 0.0) -> str:
+def generate(
+    messages: list[dict[str, str]], max_new_tokens: int = 400, temperature: float = 0.0
+) -> str:
     import torch
 
     tok, model, inp = _inputs(messages)
     with torch.inference_mode():
         out = model.generate(**inp, **_gen_kwargs(tok, max_new_tokens, temperature))
-    return tok.decode(out[0][inp["input_ids"].shape[1]:], skip_special_tokens=True).strip()
+    return tok.decode(
+        out[0][inp["input_ids"].shape[1] :], skip_special_tokens=True
+    ).strip()
 
 
-def stream(messages: list[dict[str, str]], max_new_tokens: int = 400, temperature: float = 0.0) -> Iterator[str]:
+def stream(
+    messages: list[dict[str, str]], max_new_tokens: int = 400, temperature: float = 0.0
+) -> Iterator[str]:
     import torch
     from transformers import TextIteratorStreamer
 
@@ -71,7 +83,11 @@ def stream(messages: list[dict[str, str]], max_new_tokens: int = 400, temperatur
 
     def run() -> None:
         with torch.inference_mode():
-            model.generate(**inp, streamer=streamer, **_gen_kwargs(tok, max_new_tokens, temperature))
+            model.generate(
+                **inp,
+                streamer=streamer,
+                **_gen_kwargs(tok, max_new_tokens, temperature),
+            )
 
     t = threading.Thread(target=run, daemon=True)
     t.start()

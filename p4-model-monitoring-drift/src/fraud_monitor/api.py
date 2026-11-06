@@ -1,4 +1,5 @@
 """FastAPI serving: /predict (logged), /feedback (delayed labels), /health, /reload."""
+
 from __future__ import annotations
 
 import logging
@@ -51,8 +52,10 @@ def _predict_in_extra(schema: dict, _cls: type) -> None:
 
 
 def _feedback_extra(schema: dict, _cls: type) -> None:
-    schema["examples"] = [{"request_id": e["request_id"], "label": 1 if "fraud" in e["request_id"] else 0}
-                          for e in examples.predict_examples()]
+    schema["examples"] = [
+        {"request_id": e["request_id"], "label": 1 if "fraud" in e["request_id"] else 0}
+        for e in examples.predict_examples()
+    ]
 
 
 class PredictIn(BaseModel):
@@ -134,7 +137,9 @@ def predict(body: PredictIn):
     return _score([body])[0]
 
 
-@app.post("/predict/batch", response_model=list[PredictOut], summary="Score up to 2000 transactions (used by the simulator)")
+@app.post(
+    "/predict/batch", response_model=list[PredictOut], summary="Score up to 2000 transactions (used by the simulator)"
+)
 def predict_batch(body: BatchIn):
     return _score(body.items)
 

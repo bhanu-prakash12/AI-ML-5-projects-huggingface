@@ -7,8 +7,12 @@ A = "x" * 100
 
 
 def df():
-    rows = [{"qtype": "t", "Question": f"Q {i}?", "Answer": f"{A} {i}"} for i in range(30)]
-    rows += [{"qtype": "t", "Question": "q 1?", "Answer": "other " + A}]  # dup question (case-insens.)
+    rows = [
+        {"qtype": "t", "Question": f"Q {i}?", "Answer": f"{A} {i}"} for i in range(30)
+    ]
+    rows += [
+        {"qtype": "t", "Question": "q 1?", "Answer": "other " + A}
+    ]  # dup question (case-insens.)
     rows += [{"qtype": "t", "Question": "short", "Answer": "tiny"}]
     rows += [{"qtype": "t", "Question": "  Q   2? ", "Answer": float("nan")}]
     return pd.DataFrame(rows)

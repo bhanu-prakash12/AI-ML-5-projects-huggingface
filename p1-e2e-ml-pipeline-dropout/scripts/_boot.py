@@ -1,4 +1,5 @@
 """Make `src/` importable when a script is run directly (no PYTHONPATH needed, any OS)."""
+
 import sys
 from pathlib import Path
 

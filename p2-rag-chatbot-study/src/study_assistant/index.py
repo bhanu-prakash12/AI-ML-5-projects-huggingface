@@ -1,4 +1,5 @@
 """Chroma collection + bge-small embeddings (cosine)."""
+
 from __future__ import annotations
 
 import logging
@@ -57,13 +58,16 @@ def add_chunks(store, chunks: list[Chunk]) -> int:
     new = [c for c in chunks if c.id not in existing]
     for i in range(0, len(new), BATCH):
         b = new[i : i + BATCH]
-        store.add_texts([c.text for c in b], [clean_meta(c.metadata) for c in b], [c.id for c in b])
+        store.add_texts(
+            [c.text for c in b], [clean_meta(c.metadata) for c in b], [c.id for c in b]
+        )
     log.info("index: %d new, %d already present", len(new), len(existing))
     return len(new)
 
 
-def search(store, query: str, k: int = 4, doc_type: str | None = None,
-           instruction: str = "") -> list[tuple[Any, float]]:
+def search(
+    store, query: str, k: int = 4, doc_type: str | None = None, instruction: str = ""
+) -> list[tuple[Any, float]]:
     """Similarity search with bge query instruction; returns (doc, cosine_similarity)."""
     flt = {"doc_type": doc_type} if doc_type else None
     res = store.similarity_search_with_score(instruction + query, k=k, filter=flt)

@@ -1,4 +1,5 @@
 """Pandas-free booster inference + pred_contrib explanations."""
+
 from __future__ import annotations
 
 import json
@@ -42,18 +43,29 @@ class Predictor:
 
     def predict(self, rows: list[dict[str, float]]) -> list[dict[str, Any]]:
         """Score rows (dicts keyed by feature name). Contributions are log-odds (TreeSHAP)."""
-        x = np.array([[float(r[c]) for c in self.columns] for r in rows], dtype="float64")
+        x = np.array(
+            [[float(r[c]) for c in self.columns] for r in rows], dtype="float64"
+        )
         probs = self.booster.predict(x)
         contrib = self.booster.predict(x, pred_contrib=True)[:, :-1]  # drop bias column
         out = []
         for p, c in zip(probs, contrib, strict=True):
             top = np.argsort(-np.abs(c))[:TOP_K]
-            out.append({
-                "probability": float(p),
-                "risk_tier": self.tier(float(p)),
-                "top_features": [{"feature": self.columns[i], "contribution": float(c[i]),
-                                  "direction": "increases_risk" if c[i] > 0 else "decreases_risk"}
-                                 for i in top],
-                "model_version": self.version,
-            })
+            out.append(
+                {
+                    "probability": float(p),
+                    "risk_tier": self.tier(float(p)),
+                    "top_features": [
+                        {
+                            "feature": self.columns[i],
+                            "contribution": float(c[i]),
+                            "direction": "increases_risk"
+                            if c[i] > 0
+                            else "decreases_risk",
+                        }
+                        for i in top
+                    ],
+                    "model_version": self.version,
+                }
+            )
         return out

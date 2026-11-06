@@ -11,10 +11,17 @@ def test_emergency_keywords():
 
 
 def test_api_validation_and_refusal():
-    api._S.update(cfg={"disclaimer": "d", "system_prompt": "s"}, model=object(), adapter=True)
+    api._S.update(
+        cfg={"disclaimer": "d", "system_prompt": "s"}, model=object(), adapter=True
+    )
     c = TestClient(api.app)  # no lifespan context: state injected above
-    assert c.post("/generate", json={"question": "hi there", "mode": "x"}).status_code == 422
+    assert (
+        c.post("/generate", json={"question": "hi there", "mode": "x"}).status_code
+        == 422
+    )
     assert c.post("/generate", json={"question": "x"}).status_code == 422
-    r = c.post("/generate", json={"question": "severe chest pain now", "mode": "tuned"}).json()
+    r = c.post(
+        "/generate", json={"question": "severe chest pain now", "mode": "tuned"}
+    ).json()
     assert r["refused"] and "emergency" in r["answer"].lower()
     api._S.clear()

@@ -1,4 +1,5 @@
 """Load YAML config + env overrides (pydantic-settings)."""
+
 from __future__ import annotations
 
 from functools import lru_cache
@@ -14,7 +15,9 @@ ROOT = Path(__file__).resolve().parents[2]
 class Env(BaseSettings):
     """Environment overrides (prefix P1_)."""
 
-    model_config = SettingsConfigDict(env_prefix="P1_", env_file=ROOT / ".env", extra="ignore")
+    model_config = SettingsConfigDict(
+        env_prefix="P1_", env_file=ROOT / ".env", extra="ignore"
+    )
     profile: str = "small"
     config_path: Path = ROOT / "configs" / "config.yaml"
 

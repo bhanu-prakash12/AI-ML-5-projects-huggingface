@@ -2,6 +2,7 @@
 
 Colors: cyan = operation, green = ok, yellow = warn/tradeoff, red = fail, dim = expected-output hint.
 """
+
 from __future__ import annotations
 
 import logging
@@ -28,13 +29,19 @@ def _con() -> Any:
 
 def setup_logging(level: int = logging.INFO) -> None:
     """Configure root logging once (scripts previously logged silently)."""
-    logging.basicConfig(level=level, format="%(asctime)s %(levelname)s %(name)s: %(message)s", datefmt="%H:%M:%S")
+    logging.basicConfig(
+        level=level,
+        format="%(asctime)s %(levelname)s %(name)s: %(message)s",
+        datefmt="%H:%M:%S",
+    )
 
 
 def banner(title: str, what: str, expect: str) -> None:
     if use_rich():
         body = f"{what}\n[dim]Expect: {expect}[/dim]"
-        _con().print(Panel(body, title=f"[bold cyan]{title}[/bold cyan]", border_style="cyan"))
+        _con().print(
+            Panel(body, title=f"[bold cyan]{title}[/bold cyan]", border_style="cyan")
+        )
     else:
         print(f"=== {title} ===\n{what}\nExpect: {expect}")
 
@@ -73,7 +80,11 @@ def hint(msg: str) -> None:
 
 
 def kv_table(data: dict, title: str = "") -> None:
-    table([[str(k), str(v)] for k, v in data.items()], headers=["key", "value"], title=title)
+    table(
+        [[str(k), str(v)] for k, v in data.items()],
+        headers=["key", "value"],
+        title=title,
+    )
 
 
 def table(rows: list[list], headers: list[str] | None = None, title: str = "") -> None:

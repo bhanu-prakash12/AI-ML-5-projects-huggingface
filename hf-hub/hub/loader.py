@@ -2,6 +2,7 @@
 
 Every project ships `scripts/ui.py`; importing them by bare name would collide, so each gets `pN_<name>`.
 """
+
 from __future__ import annotations
 
 import importlib.util

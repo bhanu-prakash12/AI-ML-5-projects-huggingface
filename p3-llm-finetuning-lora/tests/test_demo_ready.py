@@ -1,4 +1,5 @@
 """Console fallback, cross-platform runner logic (monkeypatched, no Windows needed), sqlite URI, API examples."""
+
 import builtins
 import importlib
 import subprocess
@@ -44,11 +45,26 @@ def test_console_import_without_rich(monkeypatch):
 def test_venv_python_per_os(tmp_path):
     assert run.venv_python(tmp_path, "nt") == tmp_path / ".venv" / "Scripts/python.exe"
     assert run.venv_python(tmp_path, "posix") == tmp_path / ".venv" / "bin/python"
-    assert run.python_exe(tmp_path, "nt") == sys.executable  # venv absent -> current interpreter
+    assert (
+        run.python_exe(tmp_path, "nt") == sys.executable
+    )  # venv absent -> current interpreter
 
 
 def test_commands_have_no_shell_tools(tmp_path):
-    for cmd in ("data", "baseline", "train", "eval", "serve", "ui", "mlflow-ui", "test", "lint", "smoke", "demo", "verify"):
+    for cmd in (
+        "data",
+        "baseline",
+        "train",
+        "eval",
+        "serve",
+        "ui",
+        "mlflow-ui",
+        "test",
+        "lint",
+        "smoke",
+        "demo",
+        "verify",
+    ):
         for argv in run.commands(cmd, [], tmp_path, "nt"):
             assert argv[0] not in ("bash", "sh", "make", "rm", "kill", "curl")
     v = run.commands("verify", [], tmp_path, "nt")
@@ -58,9 +74,14 @@ def test_commands_have_no_shell_tools(tmp_path):
 
 def test_build_env_offline_only_for_serving(tmp_path):
     e = run.build_env("serve", {}, tmp_path)
-    assert e["HF_HUB_OFFLINE"] == "1" and e["PYTHONPATH"].startswith(str(tmp_path / "src"))
+    assert e["HF_HUB_OFFLINE"] == "1" and e["PYTHONPATH"].startswith(
+        str(tmp_path / "src")
+    )
     assert "HF_HUB_OFFLINE" not in run.build_env("data", {}, tmp_path)
-    assert run.build_env("serve", {"HF_HUB_OFFLINE": "0"}, tmp_path)["HF_HUB_OFFLINE"] == "0"
+    assert (
+        run.build_env("serve", {"HF_HUB_OFFLINE": "0"}, tmp_path)["HF_HUB_OFFLINE"]
+        == "0"
+    )
 
 
 def test_kill_pid_windows_uses_taskkill(monkeypatch):
@@ -83,6 +104,7 @@ def test_device_prefers_cuda(monkeypatch):
     import torch
 
     from med_assistant.device import get_device, inference_dtype
+
     monkeypatch.setattr(torch.cuda, "is_available", lambda: True)
     assert get_device() == "cuda" and inference_dtype("cuda") == torch.float16
     monkeypatch.setattr(torch.cuda, "is_available", lambda: False)

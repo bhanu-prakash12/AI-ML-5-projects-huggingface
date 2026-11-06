@@ -4,6 +4,7 @@ Inputs:  a food photo (upload, webcam or a bundled example from assets/); the AP
 Outputs: CLIP top-3 bar plot, USDA nutrition table, recipe ideas, per-stage timings (page on :7865).
 Example: python run.py serve   (terminal 1)   then   python run.py ui   (terminal 2)
 """
+
 import argparse
 import os
 import tempfile
@@ -44,23 +45,39 @@ def analyze(path: str | None):
     except requests.RequestException as e:
         return (*EMPTY[:3], f"API unreachable: {e} (is `python run.py serve` running?)")
     if not r.ok:
-        detail = r.json().get("detail", r.text) if r.headers.get("content-type", "").startswith("application/json") else r.text
+        detail = (
+            r.json().get("detail", r.text)
+            if r.headers.get("content-type", "").startswith("application/json")
+            else r.text
+        )
         return (*EMPTY[:3], f"API error {r.status_code}: {detail}")
     d = r.json()
     top = {t["name"]: t["prob"] for t in d["top3"]}
     n = d["nutrition"]
     if n:
-        nut = pd.DataFrame([{"nutrient (per 100 g)": k, "value": ("n/a" if v is None else v)} for k, v in n["per_100g"].items()])
-        src = (f"[USDA FoodData Central: {n['matched_description']}]({n['source_url']})" if n["source_url"]
-               else "No USDA match for this class (values left empty, not invented).")
+        nut = pd.DataFrame(
+            [
+                {"nutrient (per 100 g)": k, "value": ("n/a" if v is None else v)}
+                for k, v in n["per_100g"].items()
+            ]
+        )
+        src = (
+            f"[USDA FoodData Central: {n['matched_description']}]({n['source_url']})"
+            if n["source_url"]
+            else "No USDA match for this class (values left empty, not invented)."
+        )
     else:
         nut, src = pd.DataFrame(), "No nutrition row."
     v = d["vlm"]
     md = [f"### {d['dish_name']}", src]
     if v:
-        md += [f"**What the model sees:** {v['why']}", f"**Visible ingredients:** {', '.join(v['visible_ingredients'])}",
-               f"**Portion (estimate, unreliable):** {v['portion_estimate']['description']}, ~{v['portion_estimate']['approx_grams']} g",
-               "**Recipe ideas:**", *[f"- **{x['title']}**: {x['summary']}" for x in v["recipes"]]]
+        md += [
+            f"**What the model sees:** {v['why']}",
+            f"**Visible ingredients:** {', '.join(v['visible_ingredients'])}",
+            f"**Portion (estimate, unreliable):** {v['portion_estimate']['description']}, ~{v['portion_estimate']['approx_grams']} g",
+            "**Recipe ideas:**",
+            *[f"- **{x['title']}**: {x['summary']}" for x in v["recipes"]],
+        ]
     else:
         md.append(f"_VLM unavailable: {d['vlm_error']}_")
     md.append(f"> {d['disclaimer']}")
@@ -90,15 +107,25 @@ def build() -> gr.Blocks:
     with gr.Blocks(title="Food Lens") as ui:
         gr.Markdown(HOWTO)
         with gr.Row():
-            img = gr.Image(sources=["upload", "webcam"], type="filepath", label="Food photo")
+            img = gr.Image(
+                sources=["upload", "webcam"], type="filepath", label="Food photo"
+            )
             with gr.Column():
                 plot = gr.Label(num_top_classes=3, label="CLIP top-3 (probability)")
                 table = gr.Dataframe(label="Nutrition per 100 g (USDA)")
         btn = gr.Button("Analyze", variant="primary")
         if EXAMPLES:
-            gr.Examples(EXAMPLES, inputs=img, label="Sample photos (click, then Analyze): expect a plausible dish, a nutrition table and 2 recipes",
-                        cache_examples=False)
-        status = gr.Textbox(label="Status / per-stage timings (ms)", interactive=False, placeholder="Idle. Pick a photo and press Analyze.")
+            gr.Examples(
+                EXAMPLES,
+                inputs=img,
+                label="Sample photos (click, then Analyze): expect a plausible dish, a nutrition table and 2 recipes",
+                cache_examples=False,
+            )
+        status = gr.Textbox(
+            label="Status / per-stage timings (ms)",
+            interactive=False,
+            placeholder="Idle. Pick a photo and press Analyze.",
+        )
         details = gr.Markdown()
         with gr.Accordion("Pros / cons / at scale", open=False):
             gr.Markdown(PROSCONS)
@@ -107,10 +134,21 @@ def build() -> gr.Blocks:
 
 
 if __name__ == "__main__":
-    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--port", type=int, default=cfg["ports"]["ui"], help="UI port (default from config: 7865)")
+    ap = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
+    ap.add_argument(
+        "--port",
+        type=int,
+        default=cfg["ports"]["ui"],
+        help="UI port (default from config: 7865)",
+    )
     ap.add_argument("--host", default="127.0.0.1")
     a = ap.parse_args()
     console.setup_logging()
-    console.banner("Food Lens UI", f"Gradio page that calls the API at {API}.", f"open http://{a.host}:{a.port} and click a sample photo")
+    console.banner(
+        "Food Lens UI",
+        f"Gradio page that calls the API at {API}.",
+        f"open http://{a.host}:{a.port} and click a sample photo",
+    )
     build().launch(server_name=a.host, server_port=a.port)

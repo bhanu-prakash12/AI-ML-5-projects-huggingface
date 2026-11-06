@@ -9,6 +9,7 @@ B  new fraud pattern: `frac` of the day's legit rows are overwritten by a synthe
 C  concept drift    : in the segment V1 > reference-median, `flip_frac` of fraud labels become 0 and
                       the same number of legit rows become 1 (same base rate, changed P(y|x)).
 """
+
 from __future__ import annotations
 
 import numpy as np
@@ -26,8 +27,14 @@ def cluster_spec(ref: pd.DataFrame, feats: list[str], n_feats: int) -> pd.DataFr
     return pd.DataFrame({"mean": leg.mean()[top], "std": std[top], "away": -np.sign(gap[top])})
 
 
-def apply(day_df: pd.DataFrame, day: int, ref: pd.DataFrame, feats: list[str],
-          scenario: str | None = None, start_day: int | None = None) -> pd.DataFrame:
+def apply(
+    day_df: pd.DataFrame,
+    day: int,
+    ref: pd.DataFrame,
+    feats: list[str],
+    scenario: str | None = None,
+    start_day: int | None = None,
+) -> pd.DataFrame:
     cfg = config.load()
     sc = cfg["scenario"]
     name = sc["name"] if scenario is None else scenario
@@ -45,7 +52,9 @@ def apply(day_df: pd.DataFrame, day: int, ref: pd.DataFrame, feats: list[str],
         legit_idx = out.index[out["Class"] == 0].to_numpy()
         pick = rng.choice(legit_idx, size=int(round(p["frac"] * len(out))), replace=False)
         for f, r in spec.iterrows():
-            out.loc[pick, f] = r["mean"] + r["away"] * p["shift_sigma"] * r["std"] + rng.normal(0, 0.3 * r["std"], len(pick))
+            out.loc[pick, f] = (
+                r["mean"] + r["away"] * p["shift_sigma"] * r["std"] + rng.normal(0, 0.3 * r["std"], len(pick))
+            )
         out.loc[pick, "Class"] = 1
     elif name == "C":
         p = sc["C"]

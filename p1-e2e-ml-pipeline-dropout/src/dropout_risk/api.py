@@ -1,4 +1,5 @@
 """FastAPI app: /health /predict /predict/batch."""
+
 import json
 from contextlib import asynccontextmanager
 from pathlib import Path
@@ -32,32 +33,53 @@ def create_app(model_dir: Path | None = None) -> FastAPI:
 
     @asynccontextmanager
     async def lifespan(app: FastAPI):
-        app.state.predictor = Predictor.load(model_dir or project_path("artifacts") / "model")
+        app.state.predictor = Predictor.load(
+            model_dir or project_path("artifacts") / "model"
+        )
         yield
 
-    app = FastAPI(title="Student Dropout Risk", version="1", description=DESCRIPTION,
-                  lifespan=lifespan)
+    app = FastAPI(
+        title="Student Dropout Risk",
+        version="1",
+        description=DESCRIPTION,
+        lifespan=lifespan,
+    )
     # Request models need the model's ranges, so read preprocess.json up front.
     d = model_dir or project_path("artifacts") / "model"
     meta: dict[str, Any] = json.loads((d / "preprocess.json").read_text())
     example = {c: SAMPLES["high"][c] for c in meta["columns"] if c in SAMPLES["high"]}
-    Student = student_model(meta, example if len(example) == len(meta["columns"]) else None)
+    Student = student_model(
+        meta, example if len(example) == len(meta["columns"]) else None
+    )
     Batch: type[BaseModel] = create_model(
         "BatchRequest",
-        rows=(list[Student], Field(min_length=1, max_length=max_batch,  # type: ignore[valid-type]
-                                   description=f"1..{max_batch} students")))
+        rows=(
+            list[Student],
+            Field(
+                min_length=1,
+                max_length=max_batch,  # type: ignore[valid-type]
+                description=f"1..{max_batch} students",
+            ),
+        ),
+    )
 
     @app.get("/health", response_model=Health, summary="Liveness + model version")
     def health(request: Request) -> Health:
         return Health(status="ok", model_version=request.app.state.predictor.version)
 
-    @app.post("/predict", response_model=Prediction,
-              summary="Score one student (probability, tier, top-3 SHAP)")
+    @app.post(
+        "/predict",
+        response_model=Prediction,
+        summary="Score one student (probability, tier, top-3 SHAP)",
+    )
     def predict(student: Student, request: Request) -> dict:  # type: ignore[valid-type]
         return request.app.state.predictor.predict([student.model_dump()])[0]
 
-    @app.post("/predict/batch", response_model=BatchResponse,
-              summary="Score 1..max_batch students")
+    @app.post(
+        "/predict/batch",
+        response_model=BatchResponse,
+        summary="Score 1..max_batch students",
+    )
     def predict_batch(body: Batch, request: Request) -> dict:  # type: ignore[valid-type]
         rows = [r.model_dump() for r in body.rows]  # type: ignore[attr-defined]
         return {"predictions": request.app.state.predictor.predict(rows)}
@@ -69,5 +91,8 @@ def _default_app() -> FastAPI:
     return create_app()
 
 
-app = _default_app() if (project_path("artifacts") / "model" / "preprocess.json").exists() \
+app = (
+    _default_app()
+    if (project_path("artifacts") / "model" / "preprocess.json").exists()
     else FastAPI(title="Student Dropout Risk (model not trained: run `make train`)")
+)

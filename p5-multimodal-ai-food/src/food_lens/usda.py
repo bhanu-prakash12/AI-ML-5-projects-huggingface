@@ -1,9 +1,16 @@
 """Match Food-101 classes to USDA FoodData Central rows (per 100 g). Never invents values."""
+
 from __future__ import annotations
 
 import re
 
-NUTRIENTS = {1008: "kcal", 1003: "protein_g", 1004: "fat_g", 1005: "carbs_g", 1079: "fiber_g"}
+NUTRIENTS = {
+    1008: "kcal",
+    1003: "protein_g",
+    1004: "fat_g",
+    1005: "carbs_g",
+    1079: "fiber_g",
+}
 STOP = {"with", "and", "of", "in", "the", "a", "raw", "cooked"}
 
 
@@ -24,7 +31,9 @@ def score(query: str, desc: str) -> float:
     return len(q & d) / len(q) - 0.02 * len(d - q)
 
 
-def best_match(query: str, foods: list[tuple[int, str, str]]) -> tuple[int, str, str, float] | None:
+def best_match(
+    query: str, foods: list[tuple[int, str, str]]
+) -> tuple[int, str, str, float] | None:
     """foods: (fdc_id, description, data_type). Returns best with full token coverage, else None."""
     best = None
     for fid, desc, dtype in foods:

@@ -13,7 +13,8 @@ from dropout_risk.samples import SAMPLES
 
 def _row(i: int = 0) -> dict[str, float]:
     return {c: float(RANGES[c][0]) for c in features.FEATURES} | {
-        "curricular_units_2nd_sem_approved": float(i % 6)}
+        "curricular_units_2nd_sem_approved": float(i % 6)
+    }
 
 
 @pytest.fixture(scope="module")
@@ -24,18 +25,29 @@ def client(tmp_path_factory):
     k = features.FEATURES.index("curricular_units_2nd_sem_approved")
     x[:, k] = np.arange(300) % 6
     y = (x[:, k] < 2).astype(int)
-    b = lgb.train({"objective": "binary", "verbose": -1, "seed": 42, "min_data_in_leaf": 5},
-                  lgb.Dataset(x, y), num_boost_round=20)
+    b = lgb.train(
+        {"objective": "binary", "verbose": -1, "seed": 42, "min_data_in_leaf": 5},
+        lgb.Dataset(x, y),
+        num_boost_round=20,
+    )
     b.save_model(str(d / "model.txt"))
-    (d / "preprocess.json").write_text(json.dumps(features.build_preprocess(
-        {"value": 0.5, "fallback": False}, "dropout-risk-vtest")))
+    (d / "preprocess.json").write_text(
+        json.dumps(
+            features.build_preprocess(
+                {"value": 0.5, "fallback": False}, "dropout-risk-vtest"
+            )
+        )
+    )
     with TestClient(create_app(d)) as c:
         yield c
 
 
 def test_health(client):
     r = client.get("/health")
-    assert r.status_code == 200 and r.json() == {"status": "ok", "model_version": "dropout-risk-vtest"}
+    assert r.status_code == 200 and r.json() == {
+        "status": "ok",
+        "model_version": "dropout-risk-vtest",
+    }
 
 
 def test_predict_shape(client):
@@ -70,8 +82,12 @@ def test_batch(client):
 
 
 def test_batch_limits(client):
-    assert client.post("/predict/batch", json={"rows": [_row()] * 100}).status_code == 200
-    assert client.post("/predict/batch", json={"rows": [_row()] * 101}).status_code == 422
+    assert (
+        client.post("/predict/batch", json={"rows": [_row()] * 100}).status_code == 200
+    )
+    assert (
+        client.post("/predict/batch", json={"rows": [_row()] * 101}).status_code == 422
+    )
     assert client.post("/predict/batch", json={"rows": []}).status_code == 422
 
 

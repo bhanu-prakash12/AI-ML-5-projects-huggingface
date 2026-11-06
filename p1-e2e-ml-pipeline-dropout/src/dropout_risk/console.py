@@ -2,6 +2,7 @@
 
 Colors: cyan=operation, green=ok, yellow=warn/tradeoff, red=fail, dim=expected-output hints.
 """
+
 from __future__ import annotations
 
 import logging
@@ -75,12 +76,15 @@ def hint(msg: str) -> None:
     _say(msg, "dim")
 
 
-def table(rows: Sequence[Sequence[Any]], headers: Sequence[str] | None = None,
-          title: str | None = None) -> None:
+def table(
+    rows: Sequence[Sequence[Any]],
+    headers: Sequence[str] | None = None,
+    title: str | None = None,
+) -> None:
     c = _con() if _RICH else None
     if c is not None:
         t = Table(title=title, show_header=headers is not None)
-        for h in headers or (["" ] * (len(rows[0]) if rows else 0)):
+        for h in headers or ([""] * (len(rows[0]) if rows else 0)):
             t.add_column(str(h))
         for r in rows:
             t.add_row(*[str(v) for v in r])
@@ -102,6 +106,13 @@ def note(pros: str, cons: str, scale: str) -> None:
     body = f"Pros:     {pros}\nCons:     {cons}\nAt scale: {scale}"
     c = _con() if _RICH else None
     if c is not None:
-        c.print(Panel(body, title="Pros / Cons / At scale", border_style="yellow", expand=False))
+        c.print(
+            Panel(
+                body,
+                title="Pros / Cons / At scale",
+                border_style="yellow",
+                expand=False,
+            )
+        )
     else:
         print(f"-- Pros / Cons / At scale --\n{body}")

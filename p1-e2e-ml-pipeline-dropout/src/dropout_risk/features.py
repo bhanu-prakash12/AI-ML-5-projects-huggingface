@@ -1,4 +1,5 @@
 """Column order, encodings, preprocess.json export."""
+
 from __future__ import annotations
 
 import json
@@ -11,7 +12,11 @@ from dropout_risk.data import BINARY_TARGET, RANGES, TARGET
 # D3: sensitive / protected attributes are excluded from the model; they stay in the
 # splits so fairness.py can slice metrics by them.
 SENSITIVE: tuple[str, ...] = (
-    "gender", "age_at_enrollment", "nacionality", "international", "marital_status",
+    "gender",
+    "age_at_enrollment",
+    "nacionality",
+    "international",
+    "marital_status",
     "educational_special_needs",
 )
 FEATURES: list[str] = [c for c in RANGES if c not in SENSITIVE]

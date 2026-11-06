@@ -13,6 +13,7 @@ usage: python run.py <command> [extra args]
   clean      remove .run and caches (keeps reports/)
 Extra args are passed to the underlying script, e.g. `python run.py train --yes`.
 """
+
 from __future__ import annotations
 
 import os
@@ -24,7 +25,15 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 PORTS = {"api": 8003, "ui": 7863, "mlflow": 5003}
-SERVING = {"serve", "ui", "smoke", "demo", "baseline", "eval", "merge"}  # run fully offline once models are cached
+SERVING = {
+    "serve",
+    "ui",
+    "smoke",
+    "demo",
+    "baseline",
+    "eval",
+    "merge",
+}  # run fully offline once models are cached
 
 
 def venv_python(root: Path = ROOT, os_name: str | None = None) -> Path:
@@ -43,30 +52,68 @@ def sqlite_uri(db: Path) -> str:
     return "sqlite:///" + Path(db).resolve().as_posix()
 
 
-def build_env(cmd: str, base: dict[str, str] | None = None, root: Path = ROOT) -> dict[str, str]:
+def build_env(
+    cmd: str, base: dict[str, str] | None = None, root: Path = ROOT
+) -> dict[str, str]:
     env = dict(os.environ if base is None else base)
-    env["PYTHONPATH"] = str(root / "src") + (os.pathsep + env["PYTHONPATH"] if env.get("PYTHONPATH") else "")
+    env["PYTHONPATH"] = str(root / "src") + (
+        os.pathsep + env["PYTHONPATH"] if env.get("PYTHONPATH") else ""
+    )
     env.setdefault("TOKENIZERS_PARALLELISM", "false")
     env.setdefault("PYTORCH_ENABLE_MPS_FALLBACK", "1")
-    env.setdefault("PYTHONUTF8", "1")  # Windows consoles/files default to cp1252 otherwise
+    env.setdefault(
+        "PYTHONUTF8", "1"
+    )  # Windows consoles/files default to cp1252 otherwise
     if cmd in SERVING:
         env.setdefault("HF_HUB_OFFLINE", "1")
     return env
 
 
-def commands(cmd: str, extra: list[str], root: Path = ROOT, os_name: str | None = None) -> list[list[str]]:
+def commands(
+    cmd: str, extra: list[str], root: Path = ROOT, os_name: str | None = None
+) -> list[list[str]]:
     """Return the argv lists a command runs (pure function, unit-tested)."""
     py = python_exe(root, os_name)
     s = lambda name: [py, str(root / "scripts" / name), *extra]  # noqa: E731
     table: dict[str, list[list[str]]] = {
-        "data": [s("make_data.py")], "baseline": [s("run_baseline.py")], "train": [s("train.py")],
-        "eval": [s("run_compare.py")], "merge": [s("merge.py")], "ui": [s("ui.py")], "smoke": [s("smoke.py")],
+        "data": [s("make_data.py")],
+        "baseline": [s("run_baseline.py")],
+        "train": [s("train.py")],
+        "eval": [s("run_compare.py")],
+        "merge": [s("merge.py")],
+        "ui": [s("ui.py")],
+        "smoke": [s("smoke.py")],
         "demo": [[py, str(root / "scripts" / "smoke.py"), "--demo", *extra]],
-        "serve": [[py, "-m", "uvicorn", "med_assistant.api:app", "--port", str(PORTS["api"]), "--workers", "1", *extra]],
-        "mlflow-ui": [[py, "-m", "mlflow", "ui", "--backend-store-uri", sqlite_uri(root / "mlflow.db"),
-                       "--port", str(PORTS["mlflow"]), *extra]],
+        "serve": [
+            [
+                py,
+                "-m",
+                "uvicorn",
+                "med_assistant.api:app",
+                "--port",
+                str(PORTS["api"]),
+                "--workers",
+                "1",
+                *extra,
+            ]
+        ],
+        "mlflow-ui": [
+            [
+                py,
+                "-m",
+                "mlflow",
+                "ui",
+                "--backend-store-uri",
+                sqlite_uri(root / "mlflow.db"),
+                "--port",
+                str(PORTS["mlflow"]),
+                *extra,
+            ]
+        ],
         "test": [[py, "-m", "pytest", "-q", *extra]],
-        "lint": [[py, "-m", "ruff", "check", "src", "tests", "scripts", "run.py", *extra]],
+        "lint": [
+            [py, "-m", "ruff", "check", "src", "tests", "scripts", "run.py", *extra]
+        ],
     }
     table["verify"] = table["lint"] + table["test"] + table["smoke"]
     return table[cmd]
@@ -74,7 +121,9 @@ def commands(cmd: str, extra: list[str], root: Path = ROOT, os_name: str | None 
 
 def kill_pid(pid: int, os_name: str | None = None) -> None:
     if (os_name or os.name) == "nt":
-        subprocess.run(["taskkill", "/PID", str(pid), "/F", "/T"], capture_output=True, check=False)
+        subprocess.run(
+            ["taskkill", "/PID", str(pid), "/F", "/T"], capture_output=True, check=False
+        )
     else:
         try:
             os.kill(pid, signal.SIGTERM)
@@ -106,18 +155,30 @@ def setup(root: Path = ROOT) -> int:
     vp = venv_python(root)
     if not vp.exists():
         if shutil.which("uv"):
-            subprocess.run(["uv", "venv", "--python", "3.11", str(root / ".venv")], check=True)
+            subprocess.run(
+                ["uv", "venv", "--python", "3.11", str(root / ".venv")], check=True
+            )
         elif os.name == "nt" and shutil.which("py"):
-            subprocess.run(["py", "-3.11", "-m", "venv", str(root / ".venv")], check=True)
+            subprocess.run(
+                ["py", "-3.11", "-m", "venv", str(root / ".venv")], check=True
+            )
         else:
-            subprocess.run([sys.executable, "-m", "venv", str(root / ".venv")], check=True)
+            subprocess.run(
+                [sys.executable, "-m", "venv", str(root / ".venv")], check=True
+            )
     req = str(root / "requirements-dev.txt")
     if shutil.which("uv"):
-        return subprocess.run(["uv", "pip", "install", "--python", str(vp), "-r", req], check=False).returncode
-    return subprocess.run([str(vp), "-m", "pip", "install", "-r", req], check=False).returncode
+        return subprocess.run(
+            ["uv", "pip", "install", "--python", str(vp), "-r", req], check=False
+        ).returncode
+    return subprocess.run(
+        [str(vp), "-m", "pip", "install", "-r", req], check=False
+    ).returncode
 
 
-def run_foreground(argv: list[str], env: dict[str, str], pidfile: str | None = None) -> int:
+def run_foreground(
+    argv: list[str], env: dict[str, str], pidfile: str | None = None
+) -> int:
     """Run a command; record its PID in .run/ while it lives so `stop` can kill it."""
     p = subprocess.Popen(argv, cwd=ROOT, env=env)
     if pidfile:
@@ -145,8 +206,21 @@ def main(argv: list[str] | None = None) -> int:
         return stop()
     if cmd == "clean":
         return clean()
-    if cmd not in {"data", "baseline", "train", "eval", "merge", "serve", "ui", "mlflow-ui", "test", "lint",
-                   "smoke", "verify", "demo"}:
+    if cmd not in {
+        "data",
+        "baseline",
+        "train",
+        "eval",
+        "merge",
+        "serve",
+        "ui",
+        "mlflow-ui",
+        "test",
+        "lint",
+        "smoke",
+        "verify",
+        "demo",
+    }:
         print(f"unknown command: {cmd}\n{__doc__}")
         return 2
     env = build_env(cmd)

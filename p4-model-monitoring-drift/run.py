@@ -5,6 +5,7 @@ commands: setup data train simulate monitor retrain eval serve ui mlflow-ui test
 Pass-through: extra options go to the underlying script, e.g.  python run.py simulate --reset --scenario B --start-day 6
 Demo (narrated, ~3 min): python run.py demo [--scenario A|B|C|none] [--start-day 6] [--promote] [--keep-champion]
 """
+
 from __future__ import annotations
 
 import argparse
@@ -22,8 +23,25 @@ from fraud_monitor import console, procs  # noqa: E402
 
 RUN_DIR = ROOT / ".run"
 DEFAULT_PORTS = {"api": 8004, "ui": 7864, "mlflow": 5004}
-COMMANDS = ["setup", "data", "train", "simulate", "monitor", "retrain", "eval", "serve", "ui", "mlflow-ui", "test", "lint",
-            "smoke", "verify", "demo", "stop", "clean"]
+COMMANDS = [
+    "setup",
+    "data",
+    "train",
+    "simulate",
+    "monitor",
+    "retrain",
+    "eval",
+    "serve",
+    "ui",
+    "mlflow-ui",
+    "test",
+    "lint",
+    "smoke",
+    "verify",
+    "demo",
+    "stop",
+    "clean",
+]
 
 
 def ports() -> dict[str, int]:
@@ -74,8 +92,16 @@ def build_command(cmd: str, py: str, extra: list[str]) -> list[str] | None:
 def mlflow_cmd(py: str) -> list[str]:
     from fraud_monitor.model import sqlite_uri
 
-    return [py, "-m", "mlflow", "ui", "--backend-store-uri", sqlite_uri(ROOT / "artifacts" / "mlflow.db"),
-            "--port", str(ports()["mlflow"])]
+    return [
+        py,
+        "-m",
+        "mlflow",
+        "ui",
+        "--backend-store-uri",
+        sqlite_uri(ROOT / "artifacts" / "mlflow.db"),
+        "--port",
+        str(ports()["mlflow"]),
+    ]
 
 
 def cmd_setup() -> int:
@@ -91,7 +117,9 @@ def cmd_setup() -> int:
 
 def cmd_stop() -> int:
     killed = procs.stop_pid_files(RUN_DIR)
-    console.ok(f"stopped {len(killed)} process(es) from .run/*.pid" if killed else "nothing to stop (.run/*.pid is empty)")
+    console.ok(
+        f"stopped {len(killed)} process(es) from .run/*.pid" if killed else "nothing to stop (.run/*.pid is empty)"
+    )
     return 0
 
 
@@ -118,13 +146,18 @@ def cmd_verify(py: str) -> int:
 
 
 def demo_args(argv: list[str]) -> argparse.Namespace:
-    ap = argparse.ArgumentParser(prog="run.py demo", description="Narrated end-to-end demo: serve -> simulate -> monitor -> retrain.",
-                                 epilog="Writes reports/demo/ (status.json, windows/*.html, retrain.json); open it in the dashboard "
-                                        "(python run.py ui -> 'Latest demo run').")
+    ap = argparse.ArgumentParser(
+        prog="run.py demo",
+        description="Narrated end-to-end demo: serve -> simulate -> monitor -> retrain.",
+        epilog="Writes reports/demo/ (status.json, windows/*.html, retrain.json); open it in the dashboard "
+        "(python run.py ui -> 'Latest demo run').",
+    )
     ap.add_argument("--scenario", default="B", help="A, B, C or none (default B)")
     ap.add_argument("--start-day", type=int, default=6)
     ap.add_argument("--promote", action="store_true", help="actually move the champion alias if the challenger wins")
-    ap.add_argument("--keep-champion", action="store_true", help="do not reset the champion to the baseline model first")
+    ap.add_argument(
+        "--keep-champion", action="store_true", help="do not reset the champion to the baseline model first"
+    )
     ap.add_argument("--no-retrain", action="store_true")
     return ap.parse_args(argv)
 
@@ -135,11 +168,16 @@ def cmd_demo(py: str, argv: list[str]) -> int:
     port = ports()["api"]
     base = f"http://127.0.0.1:{port}"
     db, out = RUN_DIR / "demo.db", ROOT / "reports" / "demo"
-    console.banner("end-to-end demo", f"Serve the champion model, replay 10 days of traffic with scenario {a.scenario} "
-                   f"(from day {a.start_day}), monitor every window, then try a retrain.",
-                   "alert around the injection day; retrain challenger beats the decayed champion (about 3 minutes)")
+    console.banner(
+        "end-to-end demo",
+        f"Serve the champion model, replay 10 days of traffic with scenario {a.scenario} "
+        f"(from day {a.start_day}), monitor every window, then try a retrain.",
+        "alert around the injection day; retrain challenger beats the decayed champion (about 3 minutes)",
+    )
     console.step(1, total, "checking prerequisites")
-    missing = [p for p in ("data/reference.parquet", "data/stream.parquet", "reports/baseline.json") if not (ROOT / p).exists()]
+    missing = [
+        p for p in ("data/reference.parquet", "data/stream.parquet", "reports/baseline.json") if not (ROOT / p).exists()
+    ]
     if missing:
         console.fail(f"missing {missing}: run `python run.py data` then `python run.py train` first")
         return 1
@@ -158,8 +196,13 @@ def cmd_demo(py: str, argv: list[str]) -> int:
     else:
         console.step(2, total, "keeping the current champion")
     console.step(3, total, "starting the API (prediction log: .run/demo.db)")
-    proc = procs.start_background([py, "-m", "uvicorn", "fraud_monitor.api:app", "--port", str(port), "--workers", "1"],
-                                  {**env(), "P4_DB": str(db)}, ROOT, RUN_DIR / "api.log", RUN_DIR / "api.pid")
+    proc = procs.start_background(
+        [py, "-m", "uvicorn", "fraud_monitor.api:app", "--port", str(port), "--workers", "1"],
+        {**env(), "P4_DB": str(db)},
+        ROOT,
+        RUN_DIR / "api.log",
+        RUN_DIR / "api.pid",
+    )
     try:
         if not procs.wait_health(base + "/health", 90, proc):
             console.fail("API did not become healthy")
@@ -187,7 +230,9 @@ def cmd_demo(py: str, argv: list[str]) -> int:
         except Exception:  # noqa: BLE001
             time.sleep(1)
         (RUN_DIR / "api.pid").unlink(missing_ok=True)
-    console.ok("demo finished: API stopped. Next: `python run.py ui` and pick 'Latest demo run'; `python run.py mlflow-ui` for the registry")
+    console.ok(
+        "demo finished: API stopped. Next: `python run.py ui` and pick 'Latest demo run'; `python run.py mlflow-ui` for the registry"
+    )
     return 0
 
 

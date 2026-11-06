@@ -1,4 +1,5 @@
 """Plain-English one-liners per monitoring window (pure functions; numbers come straight from status rows)."""
+
 from __future__ import annotations
 
 from typing import Any, Mapping
@@ -21,10 +22,12 @@ def window_line(r: Mapping[str, Any]) -> tuple[str, str]:
 def explain_retrain(res: Mapping[str, Any]) -> list[str]:
     ch, cr = res["champion"], res["challenger"]
     verdict = "challenger passes the gate" if res["promoted"] else "challenger rejected"
-    lines = [f"evaluated on window {res['eval_window']} ({res['n_new_labelled_rows']} new labelled rows, "
-             f"{res['n_new_frauds']} frauds)",
-             f"champion v{ch['version']} PR-AUC {ch['window']['pr_auc']:.3f} vs challenger v{cr['version']} "
-             f"{cr['window']['pr_auc']:.3f} -> {verdict}: {res['reason']}"]
+    lines = [
+        f"evaluated on window {res['eval_window']} ({res['n_new_labelled_rows']} new labelled rows, "
+        f"{res['n_new_frauds']} frauds)",
+        f"champion v{ch['version']} PR-AUC {ch['window']['pr_auc']:.3f} vs challenger v{cr['version']} "
+        f"{cr['window']['pr_auc']:.3f} -> {verdict}: {res['reason']}",
+    ]
     if res["promoted"] and not res.get("alias_updated", True):
         lines.append("alias NOT moved (dry run: pass --promote / tick the box to switch the champion)")
     return lines

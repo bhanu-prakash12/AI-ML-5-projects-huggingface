@@ -3,6 +3,7 @@
 
 Works on macOS, Linux and Windows (PowerShell / VS Code terminal). No bash, `kill`, `rm` or `time`.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -17,8 +18,23 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent
 RUN_DIR = ROOT / ".run"
 PORTS = {"API": 8000, "MLflow UI": 5001, "Gradio UI": 7861}
-COMMANDS = ["setup", "data", "train", "eval", "serve", "ui", "mlflow-ui", "test", "lint",
-            "smoke", "verify", "demo", "stop", "clean", "package"]
+COMMANDS = [
+    "setup",
+    "data",
+    "train",
+    "eval",
+    "serve",
+    "ui",
+    "mlflow-ui",
+    "test",
+    "lint",
+    "smoke",
+    "verify",
+    "demo",
+    "stop",
+    "clean",
+    "package",
+]
 
 
 def venv_python(root: Path = ROOT, os_name: str | None = None) -> str:
@@ -27,7 +43,12 @@ def venv_python(root: Path = ROOT, os_name: str | None = None) -> str:
     Falls back to the interpreter running this script when no venv exists.
     """
     win = (os_name or os.name) == "nt"
-    cand = root / ".venv" / ("Scripts" if win else "bin") / ("python.exe" if win else "python")
+    cand = (
+        root
+        / ".venv"
+        / ("Scripts" if win else "bin")
+        / ("python.exe" if win else "python")
+    )
     return str(cand) if cand.exists() else sys.executable
 
 
@@ -56,7 +77,9 @@ def kill_pid(pid: int, os_name: str | None = None) -> None:
     """Terminate a process on any OS (taskkill on Windows, SIGTERM elsewhere)."""
     try:
         if (os_name or os.name) == "nt":
-            subprocess.run(["taskkill", "/PID", str(pid), "/T", "/F"], capture_output=True)
+            subprocess.run(
+                ["taskkill", "/PID", str(pid), "/T", "/F"], capture_output=True
+            )
         else:
             os.kill(pid, signal.SIGTERM)
     except (ProcessLookupError, PermissionError, OSError):
@@ -83,9 +106,17 @@ def clean() -> int:
     for d in ("data", "artifacts"):
         for p in (ROOT / d).glob("*"):
             if p.name != ".gitkeep":
-                shutil.rmtree(p, ignore_errors=True) if p.is_dir() else p.unlink(missing_ok=True)
-    for f in ("metrics.json", "eda.md", "fairness.md", "latency.md", "resources.md",
-              "train_time.txt"):
+                shutil.rmtree(p, ignore_errors=True) if p.is_dir() else p.unlink(
+                    missing_ok=True
+                )
+    for f in (
+        "metrics.json",
+        "eda.md",
+        "fairness.md",
+        "latency.md",
+        "resources.md",
+        "train_time.txt",
+    ):
         (ROOT / "reports" / f).unlink(missing_ok=True)
     print("cleaned")
     return 0
@@ -95,7 +126,17 @@ def setup() -> int:
     """Create .venv and install dev requirements (uv if present, else venv + pip)."""
     if shutil.which("uv"):
         run(["uv", "venv", "--python", "3.11", ".venv"])
-        run(["uv", "pip", "install", "--python", venv_python(), "-r", "requirements-dev.txt"])
+        run(
+            [
+                "uv",
+                "pip",
+                "install",
+                "--python",
+                venv_python(),
+                "-r",
+                "requirements-dev.txt",
+            ]
+        )
     else:
         run([sys.executable, "-m", "venv", ".venv"])
         py = venv_python()
@@ -108,19 +149,31 @@ def demo() -> int:
     py = venv_python()
     print("== Pre-demo checklist ==")
     model = ROOT / "artifacts" / "model" / "model.txt"
-    print(("OK   " if model.exists() else "FAIL ") + f"trained model at {model.relative_to(ROOT)}"
-          + ("" if model.exists() else "  -> run: python run.py data ; python run.py train"))
+    print(
+        ("OK   " if model.exists() else "FAIL ")
+        + f"trained model at {model.relative_to(ROOT)}"
+        + (
+            ""
+            if model.exists()
+            else "  -> run: python run.py data ; python run.py train"
+        )
+    )
     for name, port in PORTS.items():
-        print(("OK   " if port_free(port) else "WARN ") + f"{name} port {port} "
-              + ("free" if port_free(port) else "in use (python run.py stop, or free it)"))
+        print(
+            ("OK   " if port_free(port) else "WARN ")
+            + f"{name} port {port} "
+            + ("free" if port_free(port) else "in use (python run.py stop, or free it)")
+        )
     if not model.exists():
         return 1
     run([py, "scripts/evaluate.py"])
     run([py, "scripts/smoke.py"])
-    print("\nNext (separate terminals):\n"
-          "  python run.py serve       -> http://127.0.0.1:8000/docs\n"
-          "  python run.py ui          -> http://127.0.0.1:7861\n"
-          "  python run.py mlflow-ui   -> http://127.0.0.1:5001")
+    print(
+        "\nNext (separate terminals):\n"
+        "  python run.py serve       -> http://127.0.0.1:8000/docs\n"
+        "  python run.py ui          -> http://127.0.0.1:7861\n"
+        "  python run.py mlflow-ui   -> http://127.0.0.1:5001"
+    )
     return 0
 
 
@@ -128,16 +181,31 @@ def dispatch(cmd: str) -> int:
     py = venv_python()
     table = {
         "setup": setup,
-        "data": lambda: run([py, "scripts/make_data.py"]) or run([py, "scripts/eda.py"]),
+        "data": lambda: run([py, "scripts/make_data.py"])
+        or run([py, "scripts/eda.py"]),
         "train": lambda: run([py, "scripts/train.py"]),
         "eval": lambda: run([py, "scripts/evaluate.py"]),
-        "serve": lambda: run([py, "-m", "uvicorn", "dropout_risk.api:app", "--port", "8000"],
-                             check=False),
+        "serve": lambda: run(
+            [py, "-m", "uvicorn", "dropout_risk.api:app", "--port", "8000"], check=False
+        ),
         "ui": lambda: run([py, "scripts/ui.py"], check=False),
-        "mlflow-ui": lambda: run([py, "-m", "mlflow", "ui", "--backend-store-uri",
-                                  "sqlite:///mlflow.db", "--port", "5001"], check=False),
+        "mlflow-ui": lambda: run(
+            [
+                py,
+                "-m",
+                "mlflow",
+                "ui",
+                "--backend-store-uri",
+                "sqlite:///mlflow.db",
+                "--port",
+                "5001",
+            ],
+            check=False,
+        ),
         "test": lambda: run([py, "-m", "pytest", "-q"]),
-        "lint": lambda: run([py, "-m", "ruff", "check", "src", "tests", "scripts", "run.py"]),
+        "lint": lambda: run(
+            [py, "-m", "ruff", "check", "src", "tests", "scripts", "run.py"]
+        ),
         "smoke": lambda: run([py, "scripts/smoke.py"]),
         "demo": demo,
         "stop": stop,
@@ -157,7 +225,8 @@ def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(
         description="Cross-platform runner for p1 (dropout risk).",
         epilog="Typical: python run.py setup ; data ; train ; eval ; serve | ui | mlflow-ui. "
-               "`demo` prints a pre-demo checklist. `verify` = lint + test + smoke.")
+        "`demo` prints a pre-demo checklist. `verify` = lint + test + smoke.",
+    )
     ap.add_argument("command", choices=COMMANDS)
     return dispatch(ap.parse_args(argv).command)
 

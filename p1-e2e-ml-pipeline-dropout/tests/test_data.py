@@ -10,15 +10,22 @@ def make_df(n: int = 400, seed: int = 0) -> pd.DataFrame:
     import numpy as np
 
     rng = np.random.default_rng(seed)
-    cols = {c: rng.integers(int(lo), int(lo) + 2, n) for c, (lo, _hi) in data.RANGES.items()}
+    cols = {
+        c: rng.integers(int(lo), int(lo) + 2, n) for c, (lo, _hi) in data.RANGES.items()
+    }
     df = pd.DataFrame(cols)
-    df[data.TARGET] = rng.choice(["Dropout", "Enrolled", "Graduate"], n, p=[0.32, 0.18, 0.5])
+    df[data.TARGET] = rng.choice(
+        ["Dropout", "Enrolled", "Graduate"], n, p=[0.32, 0.18, 0.5]
+    )
     return df
 
 
 def test_snake_names():
     assert data.snake("Mother's qualification") == "mother_s_qualification"
-    assert data.snake("Curricular units 1st sem (credited)") == "curricular_units_1st_sem_credited"
+    assert (
+        data.snake("Curricular units 1st sem (credited)")
+        == "curricular_units_1st_sem_credited"
+    )
     assert data.snake("Daytime/evening attendance") == "daytime_evening_attendance"
 
 
